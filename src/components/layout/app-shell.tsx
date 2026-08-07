@@ -1,11 +1,21 @@
 "use client";
 
+import { usePathname } from "next/navigation";
 import { Sidebar } from "./sidebar";
 import { BottomNav } from "./bottom-nav";
 import { Topbar } from "./topbar";
 import { Fab } from "@/components/shared/fab";
 
+const NO_SHELL_ROUTES = ["/signin", "/signup"];
+
 export function AppShell({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname();
+  const hideShell = NO_SHELL_ROUTES.includes(pathname);
+
+  if (hideShell) {
+    return <>{children}</>;
+  }
+
   return (
     <div className="flex min-h-screen">
       <Sidebar />

@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Space_Grotesk, Inter } from "next/font/google";
 import "./globals.css";
 import { AppShell } from "@/components/layout/app-shell";
+import { ToastProvider } from "@/components/ui/toast";
 
 const spaceGrotesk = Space_Grotesk({
   variable: "--font-space-grotesk",
@@ -31,8 +32,12 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en">
-      <body className={`${spaceGrotesk.variable} ${inter.variable} antialiased`}>
-        <AppShell>{children}</AppShell>
+      <body
+        className={`${spaceGrotesk.variable} ${inter.variable} antialiased`}
+      >
+        <ToastProvider>
+          <AppShell>{children}</AppShell>
+        </ToastProvider>
       </body>
     </html>
   );
