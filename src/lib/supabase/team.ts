@@ -1,12 +1,12 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { clerkClient } from "@clerk/nextjs/server";
 import {
   requireMembership,
   requireRole,
   type Role,
 } from "@/lib/supabase/membership";
-import { createAdminClient } from "./admin";
 
 export type MemberRow = {
   userId: string;
@@ -25,18 +25,26 @@ export async function listMembersAction(): Promise<MemberRow[]> {
   if (error) throw new Error(error.message);
   if (!members?.length) return [];
 
-  // business_members only stores user_id — emails live in auth.users,
-  // which needs the admin client to read.
-  const admin = createAdminClient();
+  // Fetch Clerk user details batching or looping with Clerk SDK
+  const client = await clerkClient();
   const rows: MemberRow[] = [];
+
   for (const m of members) {
-    const { data } = await admin.auth.admin.getUserById(m.user_id);
+    let email = "(unknown)";
+    try {
+      const user = await client.users.getUser(m.user_id);
+      email = user.emailAddresses[0]?.emailAddress ?? "(unknown)";
+    } catch {
+      // Handles cases where a user might be deleted in Clerk
+    }
+
     rows.push({
       userId: m.user_id,
-      email: data.user?.email ?? "(unknown)",
+      email,
       role: m.role as Role,
     });
   }
+
   return rows;
 }
 
@@ -47,12 +55,16 @@ export async function inviteMemberAction(
   const { businessId, role: myRole } = await requireMembership();
   requireRole(myRole, ["owner"]);
 
-  const admin = createAdminClient();
-  const { error } = await admin.auth.admin.inviteUserByEmail(email, {
-    data: { invited_business_id: businessId, invited_role: role },
-  });
+  const client = await clerkClient();
 
-  if (error) throw new Error(error.message);
+  // Create invitation through Clerk
+  await client.invitations.createInvitation({
+    emailAddress: email,
+    publicMetadata: {
+      invited_business_id: businessId,
+      invited_role: role,
+    },
+  });
 
   revalidatePath("/team");
 }
