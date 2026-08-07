@@ -6,7 +6,7 @@ import { BottomNav } from "./bottom-nav";
 import { Topbar } from "./topbar";
 import { Fab } from "@/components/shared/fab";
 
-const NO_SHELL_ROUTES = ["/signin", "/signup"];
+const NO_SHELL_ROUTES = ["/signin", "/signup", "/forgot-password"];
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();

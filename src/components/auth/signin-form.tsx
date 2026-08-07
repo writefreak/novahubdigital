@@ -141,6 +141,14 @@ export function SignInForm() {
                 </p>
               )}
             </div>
+            <div className="flex justify-end pt-1">
+              <Link
+                href="/forgot-password"
+                className="text-xs font-medium text-accent underline"
+              >
+                Forgot password?
+              </Link>
+            </div>
 
             <div id="clerk-captcha" />
 
