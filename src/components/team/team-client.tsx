@@ -1,22 +1,20 @@
 "use client";
 
 import { useState, useTransition } from "react";
-
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Mail, Send, PlusCircle } from "lucide-react";
 import { Role } from "@/lib/supabase/membership";
-import { Button } from "../ui/button";
 import {
   inviteMemberAction,
   MemberRow,
   removeMemberAction,
   updateMemberRoleAction,
 } from "@/lib/supabase/team";
+import { AccessRole, RoleSwitch } from "./role-switch";
+import { MemberCard } from "./member-card";
 
-const ROLE_LABEL: Record<Role, string> = {
-  owner: "Owner",
-  full: "Full access",
-  add_only: "Add only",
+const ROLE_DESCRIPTION: Record<AccessRole, string> = {
+  add_only: "Can log sales & expenses",
+  full: "Can also edit & delete",
 };
 
 export function TeamClient({
@@ -28,7 +26,7 @@ export function TeamClient({
 }) {
   const isOwner = myRole === "owner";
   const [email, setEmail] = useState("");
-  const [role, setRole] = useState<Role>("add_only");
+  const [role, setRole] = useState<AccessRole>("add_only");
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
 
@@ -45,7 +43,7 @@ export function TeamClient({
     });
   }
 
-  function handleRoleChange(userId: string, newRole: Role) {
+  function handleRoleChange(userId: string, newRole: AccessRole) {
     startTransition(async () => {
       try {
         await updateMemberRoleAction(userId, newRole);
@@ -66,75 +64,87 @@ export function TeamClient({
   }
 
   return (
-    <div className="space-y-6">
-      <h1 className="text-xl font-semibold">Team</h1>
+    <div className="w-full min-w-0 space-y-6">
+      <div className="flex items-baseline justify-between">
+        <h1 className="font-display text-xl font-semibold">Team</h1>
+        <span className="text-xs text-muted-foreground">
+          {members.length} {members.length === 1 ? "member" : "members"}
+        </span>
+      </div>
 
-      <ul className="space-y-2">
+      <ul className="w-full min-w-0 space-y-2">
         {members.map((m) => (
-          <li
+          <MemberCard
             key={m.userId}
-            className="flex items-center justify-between gap-2 rounded-md border p-3"
-          >
-            <span>{m.email}</span>
-            {isOwner && m.role !== "owner" ? (
-              <div className="flex items-center gap-2">
-                <select
-                  className="rounded-md border bg-transparent px-2 py-1 text-sm"
-                  value={m.role}
-                  disabled={pending}
-                  onChange={(e) =>
-                    handleRoleChange(m.userId, e.target.value as Role)
-                  }
-                >
-                  <option value="add_only">Add only</option>
-                  <option value="full">Full access</option>
-                </select>
-                <Button
-                  type="button"
-                  disabled={pending}
-                  onClick={() => handleRemove(m.userId)}
-                >
-                  Remove
-                </Button>
-              </div>
-            ) : (
-              <span className="text-sm opacity-70">{ROLE_LABEL[m.role]}</span>
-            )}
-          </li>
+            member={m}
+            isOwner={isOwner}
+            pending={pending}
+            onRoleChange={(newRole) => handleRoleChange(m.userId, newRole)}
+            onRemove={() => handleRemove(m.userId)}
+          />
         ))}
       </ul>
 
       {isOwner && (
-        <form onSubmit={handleInvite} className="space-y-3 border-t pt-4">
-          <h2 className="font-medium">Invite someone</h2>
-          <div className="space-y-1">
-            <Label htmlFor="invite-email">Email</Label>
-            <Input
-              id="invite-email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
+        <form
+          onSubmit={handleInvite}
+          className="w-full min-w-0 space-y-4 rounded-xl border border-dashed border-border bg-card/50 p-4 sm:p-5"
+        >
+          <div className="flex items-center gap-2">
+            <PlusCircle size={16} className="text-accent" />
+            <h2 className="font-display text-sm font-semibold">
+              Invite someone
+            </h2>
           </div>
-          <div className="space-y-1">
-            <Label htmlFor="invite-role">Access level</Label>
-            <select
-              id="invite-role"
-              className="w-full rounded-md border bg-transparent px-2 py-1 text-sm"
-              value={role}
-              onChange={(e) => setRole(e.target.value as Role)}
-            >
-              <option value="add_only">
-                Add only — can log sales/expenses
-              </option>
-              <option value="full">Full access — can also edit/delete</option>
-            </select>
+
+          <div className="flex w-full min-w-0 flex-col gap-3 sm:flex-row sm:items-end">
+            <div className="min-w-0 flex-1 space-y-1.5">
+              <label
+                htmlFor="invite-email"
+                className="text-xs font-medium text-muted-foreground"
+              >
+                Email address
+              </label>
+              <div className="flex min-w-0 items-center gap-2 rounded-lg border border-border bg-background px-3 py-2 focus-within:border-accent focus-within:ring-2 focus-within:ring-accent/20">
+                <Mail size={15} className="shrink-0 text-muted-foreground" />
+                <input
+                  id="invite-email"
+                  type="email"
+                  placeholder="name@example.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  className="w-full min-w-0 bg-transparent text-sm outline-none placeholder:text-muted-foreground/60"
+                />
+              </div>
+            </div>
+
+            <div className="w-full space-y-1.5 sm:w-40">
+              <span className="block text-xs font-medium text-muted-foreground">
+                Access level
+              </span>
+              <RoleSwitch value={role} onChange={setRole} disabled={pending} />
+            </div>
           </div>
+
+          <p className="text-xs text-muted-foreground">
+            {ROLE_DESCRIPTION[role]}
+          </p>
+
           {error && <p className="text-sm text-expense">{error}</p>}
-          <Button type="submit" disabled={pending}>
+
+          <button
+            type="submit"
+            disabled={pending}
+            className="inline-flex items-center gap-2 rounded-full bg-accent px-5 py-2.5 text-sm font-semibold text-accent-foreground transition-transform active:scale-[0.98] disabled:opacity-60"
+          >
+            {pending ? (
+              <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-accent-foreground/30 border-t-accent-foreground" />
+            ) : (
+              <Send size={14} />
+            )}
             {pending ? "Sending…" : "Send invite"}
-          </Button>
+          </button>
         </form>
       )}
     </div>
