@@ -46,7 +46,7 @@ export function Topbar() {
 
     // Give the user a moment to see the toast before redirecting
     setTimeout(async () => {
-      await signOut({ redirectUrl: "/sign-in" });
+      await signOut({ redirectUrl: "/signin" });
     }, 1200);
   };
 
