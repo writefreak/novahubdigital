@@ -84,69 +84,74 @@ export function SignInForm() {
   }
 
   return (
-    <Card className="w-full max-w-sm">
-      <CardHeader>
-        <CardTitle>Sign in</CardTitle>
-        <CardDescription>Welcome back to NovaHub.</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-          <div className="flex flex-col gap-1.5">
-            <Label htmlFor="email">Email</Label>
-            <Input
-              id="email"
-              type="email"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-            {clerkErrors?.fields?.identifier?.message && (
-              <p className="text-xs text-expense">
-                {clerkErrors.fields.identifier.message}
-              </p>
-            )}
-          </div>
-          <div className="flex flex-col gap-1.5">
-            <Label htmlFor="password">Password</Label>
-            <div className="relative">
+    <div className="w-full max-w-sm p-4">
+      {" "}
+      <Card className="">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-xl md:text-2xl font-semibold">
+            Sign into your account
+          </CardTitle>
+          <CardDescription>Welcome back to NovaHub</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor="email">Email</Label>
               <Input
-                id="password"
-                type={showPassword ? "text" : "password"}
+                id="email"
+                type="email"
                 required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="pr-10"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
               />
-              <button
-                type="button"
-                onClick={() => setShowPassword((v) => !v)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                aria-label={showPassword ? "Hide password" : "Show password"}
-                tabIndex={-1}
-              >
-                {showPassword ? (
-                  <EyeOff className="h-4 w-4" />
-                ) : (
-                  <Eye className="h-4 w-4" />
-                )}
-              </button>
+              {clerkErrors?.fields?.identifier?.message && (
+                <p className="text-xs text-expense">
+                  {clerkErrors.fields.identifier.message}
+                </p>
+              )}
             </div>
-            {clerkErrors?.fields?.password?.message && (
-              <p className="text-xs text-expense">
-                {clerkErrors.fields.password.message}
-              </p>
-            )}
-          </div>
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor="password">Password</Label>
+              <div className="relative">
+                <Input
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="pr-10"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((v) => !v)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                  tabIndex={-1}
+                >
+                  {showPassword ? (
+                    <EyeOff className="h-4 w-4" />
+                  ) : (
+                    <Eye className="h-4 w-4" />
+                  )}
+                </button>
+              </div>
+              {clerkErrors?.fields?.password?.message && (
+                <p className="text-xs text-expense">
+                  {clerkErrors.fields.password.message}
+                </p>
+              )}
+            </div>
 
-          <div id="clerk-captcha" />
+            <div id="clerk-captcha" />
 
-          {formError && <p className="text-sm text-expense">{formError}</p>}
+            {formError && <p className="text-sm text-expense">{formError}</p>}
 
-          <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? "Signing in…" : "Sign in"}
-          </Button>
-        </form>
-      </CardContent>
-    </Card>
+            <Button type="submit" disabled={isSubmitting}>
+              {isSubmitting ? "Signing in…" : "Sign in"}
+            </Button>
+          </form>
+        </CardContent>
+      </Card>
+    </div>
   );
 }

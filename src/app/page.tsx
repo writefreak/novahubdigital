@@ -21,7 +21,7 @@ export default function DashboardPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="-mx-4 rounded-b-2xl px-4 pb-6 pt-1 lg:mx-0 lg:rounded-2xl lg:px-6 lg:py-6">
+      <div className="rounded-b-2xl pb-6 pt-1 lg:mx-0 lg:rounded-2xl lg:px-6 lg:py-6">
         <h1 className="font-display text-2xl font-bold tracking-tight lg:text-3xl">
           Hello, Welcome Back 👋
         </h1>

@@ -20,7 +20,8 @@ export default function ReportsPage() {
     return entries.filter((e) => e.date >= cutoff);
   }, [entries, range]);
 
-  const rangeLabel = range === "today" ? "Today" : range === "week" ? "Last 7 days" : "All time";
+  const rangeLabel =
+    range === "today" ? "Today" : range === "week" ? "Last 7 days" : "All time";
 
   const options: { value: Range; label: string }[] = [
     { value: "today", label: "Today" },
@@ -31,9 +32,11 @@ export default function ReportsPage() {
   return (
     <div className="flex flex-col gap-5">
       <div>
-        <h1 className="font-display text-2xl font-bold tracking-tight">Reports</h1>
-        <p className="mt-1 text-sm text-muted-foreground">
-          A plain-English summary your dad can read at a glance.
+        <h1 className="font-display text-xl md:text-2xl font-bold tracking-tight">
+          Reports
+        </h1>
+        <p className="mt-1 text-xs md:text-sm text-muted-foreground">
+          A detailed summary of your admin and financial activities.
         </p>
       </div>
 

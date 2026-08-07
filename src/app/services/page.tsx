@@ -32,10 +32,10 @@ export default function ServicesPage() {
     <div className="flex flex-col gap-5">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="font-display text-2xl font-bold tracking-tight">
+          <h1 className="font-displaytext-xl md:text-2xl  font-bold tracking-tight">
             Services
           </h1>
-          <p className="mt-1 text-sm text-muted-foreground">
+          <p className="mt-1 text-xs md:text-sm text-muted-foreground">
             What NovaHub offers, and what it costs.
           </p>
         </div>

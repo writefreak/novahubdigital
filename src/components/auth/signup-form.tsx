@@ -134,116 +134,12 @@ export function SignUpForm() {
   }
 
   return (
-    <Card className="w-full max-w-sm">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          {pendingVerification && (
-            <button
-              type="button"
-              onClick={() => {
-                setPendingVerification(false);
-                setFormError(null);
-                setCode("");
-              }}
-              className="inline-flex items-center justify-center rounded-md p-1 text-muted-foreground transition-colors hover:text-foreground"
-              aria-label="Back to registration"
-            >
-              <ArrowLeft className="h-4 w-4" />
-            </button>
-          )}
-          {pendingVerification ? "Verify Email" : "Create Account"}
-        </CardTitle>
-        <CardDescription>
-          {pendingVerification
-            ? `Enter the verification code sent to ${email}`
-            : "Get started with NovaHub today."}
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        {!pendingVerification ? (
-          <form onSubmit={handleSignUp} className="flex flex-col gap-4">
-            <div className="flex flex-col gap-1.5">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-              {clerkErrors?.fields?.emailAddress?.message && (
-                <p className="text-xs text-expense">
-                  {clerkErrors.fields.emailAddress.message}
-                </p>
-              )}
-            </div>
-            <div className="flex flex-col gap-1.5">
-              <Label htmlFor="password">Password</Label>
-              <div className="relative">
-                <Input
-                  id="password"
-                  type={showPassword ? "text" : "password"}
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="pr-10"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword((v) => !v)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                  aria-label={showPassword ? "Hide password" : "Show password"}
-                  tabIndex={-1}
-                >
-                  {showPassword ? (
-                    <EyeOff className="h-4 w-4" />
-                  ) : (
-                    <Eye className="h-4 w-4" />
-                  )}
-                </button>
-              </div>
-              {clerkErrors?.fields?.password?.message && (
-                <p className="text-xs text-expense">
-                  {clerkErrors.fields.password.message}
-                </p>
-              )}
-            </div>
-
-            <div id="clerk-captcha" />
-
-            {formError && <p className="text-sm text-expense">{formError}</p>}
-
-            <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? "Creating account..." : "Sign up"}
-            </Button>
-          </form>
-        ) : (
-          <form onSubmit={handleVerify} className="flex flex-col gap-4">
-            <div className="flex flex-col gap-1.5">
-              <Label htmlFor="code">Verification Code</Label>
-              <Input
-                id="code"
-                type="text"
-                required
-                value={code}
-                onChange={(e) => setCode(e.target.value)}
-                placeholder="123456"
-                className="text-center tracking-widest"
-              />
-              {clerkErrors?.fields?.code?.message && (
-                <p className="text-xs text-expense">
-                  {clerkErrors.fields.code.message}
-                </p>
-              )}
-            </div>
-
-            {formError && <p className="text-sm text-expense">{formError}</p>}
-
-            <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? "Verifying..." : "Verify Code"}
-            </Button>
-
-            <div className="flex items-center justify-between pt-2 text-xs text-muted-foreground">
+    <div className="w-full max-w-sm p-4">
+      {" "}
+      <Card className="">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-xl md:text-2xl font-semibold">
+            {pendingVerification && (
               <button
                 type="button"
                 onClick={() => {
@@ -251,25 +147,134 @@ export function SignUpForm() {
                   setFormError(null);
                   setCode("");
                 }}
-                className="flex items-center gap-1 hover:underline"
+                className="inline-flex items-center justify-center rounded-md p-1 text-muted-foreground transition-colors hover:text-foreground"
+                aria-label="Back to registration"
               >
-                Change Email
+                <ArrowLeft className="h-4 w-4" />
               </button>
-              <button
-                type="button"
-                onClick={handleResendCode}
-                disabled={isResending || isSubmitting}
-                className="flex items-center gap-1 text-primary hover:underline disabled:opacity-50"
-              >
-                <RefreshCw
-                  className={`h-3 w-3 ${isResending ? "animate-spin" : ""}`}
+            )}
+            {pendingVerification ? "Verify Email" : "Create Account"}
+          </CardTitle>
+          <CardDescription>
+            {pendingVerification
+              ? `Enter the verification code sent to ${email}`
+              : "Get started with NovaHub today."}
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          {!pendingVerification ? (
+            <form onSubmit={handleSignUp} className="flex flex-col gap-4">
+              <div className="flex flex-col gap-1.5">
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                 />
-                {isResending ? "Resending..." : "Resend Code"}
-              </button>
-            </div>
-          </form>
-        )}
-      </CardContent>
-    </Card>
+                {clerkErrors?.fields?.emailAddress?.message && (
+                  <p className="text-xs text-expense">
+                    {clerkErrors.fields.emailAddress.message}
+                  </p>
+                )}
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <Label htmlFor="password">Password</Label>
+                <div className="relative">
+                  <Input
+                    id="password"
+                    type={showPassword ? "text" : "password"}
+                    required
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="pr-10"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword((v) => !v)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                    aria-label={
+                      showPassword ? "Hide password" : "Show password"
+                    }
+                    tabIndex={-1}
+                  >
+                    {showPassword ? (
+                      <EyeOff className="h-4 w-4" />
+                    ) : (
+                      <Eye className="h-4 w-4" />
+                    )}
+                  </button>
+                </div>
+                {clerkErrors?.fields?.password?.message && (
+                  <p className="text-xs text-expense">
+                    {clerkErrors.fields.password.message}
+                  </p>
+                )}
+              </div>
+
+              <div id="clerk-captcha" />
+
+              {formError && <p className="text-sm text-expense">{formError}</p>}
+
+              <Button type="submit" disabled={isSubmitting}>
+                {isSubmitting ? "Creating account..." : "Sign up"}
+              </Button>
+            </form>
+          ) : (
+            <form onSubmit={handleVerify} className="flex flex-col gap-4">
+              <div className="flex flex-col gap-1.5">
+                <Label htmlFor="code">Verification Code</Label>
+                <Input
+                  id="code"
+                  type="text"
+                  required
+                  value={code}
+                  onChange={(e) => setCode(e.target.value)}
+                  placeholder="123456"
+                  className="text-center tracking-widest"
+                />
+                {clerkErrors?.fields?.code?.message && (
+                  <p className="text-xs text-expense">
+                    {clerkErrors.fields.code.message}
+                  </p>
+                )}
+              </div>
+
+              {formError && <p className="text-sm text-expense">{formError}</p>}
+
+              <Button type="submit" disabled={isSubmitting}>
+                {isSubmitting ? "Verifying..." : "Verify Code"}
+              </Button>
+
+              <div className="flex items-center justify-between pt-2 text-xs text-muted-foreground">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setPendingVerification(false);
+                    setFormError(null);
+                    setCode("");
+                  }}
+                  className="flex items-center gap-1 hover:underline"
+                >
+                  Change Email
+                </button>
+                <button
+                  type="button"
+                  onClick={handleResendCode}
+                  disabled={isResending || isSubmitting}
+                  className="flex items-center gap-1 text-primary hover:underline disabled:opacity-50"
+                >
+                  <RefreshCw
+                    className={`h-3 w-3 ${isResending ? "animate-spin" : ""}`}
+                  />
+                  {isResending ? "Resending..." : "Resend Code"}
+                </button>
+              </div>
+            </form>
+          )}
+        </CardContent>
+      </Card>
+    </div>
   );
 }
