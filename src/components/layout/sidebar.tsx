@@ -10,9 +10,8 @@ export function Sidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="hidden lg:flex lg:w-64 lg:flex-col lg:border-r lg:border-border lg:bg-card lg:px-4 lg:py-6">
+    <aside className="hidden lg:sticky lg:top-0 lg:z-40 lg:flex lg:h-screen lg:w-64 lg:flex-col lg:overflow-y-auto lg:border-r lg:border-border lg:bg-card lg:px-4 lg:py-6">
       <div className="flex items-center gap-2.5 px-2 pb-8">
-        <NovaMark className="h-9 w-9" />
         <div>
           <p className="font-display text-lg font-bold leading-none">NovaHub</p>
           <p className="text-xs text-muted-foreground mt-1">Cafe dashboard</p>
@@ -30,7 +29,7 @@ export function Sidebar() {
                 "flex items-center gap-3 rounded-xl px-3.5 py-2.5 text-sm font-semibold transition-colors",
                 active
                   ? "bg-accent-soft text-accent"
-                  : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                  : "text-muted-foreground hover:bg-muted hover:text-foreground",
               )}
             >
               <item.icon className="h-[18px] w-[18px]" strokeWidth={2.25} />
