@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useSignIn } from "@clerk/nextjs";
 import { Eye, EyeOff } from "lucide-react";
@@ -85,7 +86,6 @@ export function SignInForm() {
 
   return (
     <div className="w-full max-w-sm p-4">
-      {" "}
       <Card className="">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-xl md:text-2xl font-semibold">
@@ -149,6 +149,16 @@ export function SignInForm() {
             <Button type="submit" disabled={isSubmitting}>
               {isSubmitting ? "Signing in…" : "Sign in"}
             </Button>
+
+            <p className="text-center text-xs text-muted-foreground pt-2">
+              Don&apos;t have an account?{" "}
+              <Link
+                href="/signup"
+                className="font-medium text-accent underline underline-offset-4 hover:opacity-80"
+              >
+                Sign up
+              </Link>
+            </p>
           </form>
         </CardContent>
       </Card>
