@@ -9,7 +9,13 @@ import { cn, formatNaira } from "@/lib/utils";
 import { useStore } from "@/lib/store";
 import type { Entry } from "@/lib/types";
 
-export function EntryItem({ entry, index = 0 }: { entry: Entry; index?: number }) {
+export function EntryItem({
+  entry,
+  index = 0,
+}: {
+  entry: Entry;
+  index?: number;
+}) {
   const removeEntry = useStore((s) => s.removeEntry);
   const isIncome = entry.type === "income";
 
@@ -23,10 +29,16 @@ export function EntryItem({ entry, index = 0 }: { entry: Entry; index?: number }
         <div
           className={cn(
             "flex h-10 w-10 shrink-0 items-center justify-center rounded-full",
-            isIncome ? "bg-income-soft text-income" : "bg-expense-soft text-expense"
+            isIncome
+              ? "bg-income-soft text-income"
+              : "bg-expense-soft text-expense",
           )}
         >
-          {isIncome ? <ShoppingBag className="h-[18px] w-[18px]" /> : <Wallet className="h-[18px] w-[18px]" />}
+          {isIncome ? (
+            <ShoppingBag className="h-[18px] w-[18px]" />
+          ) : (
+            <Wallet className="h-[18px] w-[18px]" />
+          )}
         </div>
 
         <div className="min-w-0 flex-1">
@@ -40,7 +52,11 @@ export function EntryItem({ entry, index = 0 }: { entry: Entry; index?: number }
           ) : (
             <p className="truncate text-sm font-semibold">{entry.item}</p>
           )}
-          {entry.note && <p className="truncate text-xs text-muted-foreground">{entry.note}</p>}
+          {entry.note && (
+            <p className="truncate text-xs text-muted-foreground">
+              {entry.note}
+            </p>
+          )}
         </div>
 
         <div className="flex shrink-0 items-center gap-2">

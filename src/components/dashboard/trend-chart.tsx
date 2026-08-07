@@ -49,22 +49,22 @@ export function TrendChart() {
   });
 
   return (
-    <Card className="rounded-2xl border-border bg-card shadow-[0_1px_1px_rgba(27,24,21,0.04),0_8px_20px_-8px_rgba(27,24,21,0.10)]">
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+    <Card className="rounded-2xl border-border bg-card shadow-sm">
+      <CardHeader className="flex flex-col md:flex-row md:items-center justify-between space-y-0 pb-2">
         <div>
-          <CardTitle className="font-display text-base font-semibold">
+          <CardTitle className="font-display text-sm md:text-base font-semibold">
             This week
           </CardTitle>
           <CardDescription className="text-xs">
             Sales vs. expenses, last 7 days
           </CardDescription>
         </div>
-        <div className="flex items-center gap-3 text-[11px] font-semibold uppercase tracking-[0.06em] text-muted-foreground">
-          <span className="flex items-center gap-1.5">
+        <div className="flex items-center gap-3 font-semibold uppercase md:pt-0 pt-3 text-muted-foreground">
+          <span className="flex text-xs md:text-sm items-center gap-1.5">
             <span className="h-2 w-2 rounded-full bg-income" />
             Sales
           </span>
-          <span className="flex items-center gap-1.5">
+          <span className="flex text-xs md:text-sm items-center gap-1.5">
             <span className="h-2 w-2 rounded-full bg-expense" />
             Expenses
           </span>

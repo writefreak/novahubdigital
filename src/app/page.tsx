@@ -62,18 +62,18 @@ export default function DashboardPage() {
 
       <div>
         <div className="mb-3 flex items-center justify-between">
-          <h2 className="font-display text-lg font-semibold">
+          <h2 className="font-display text-sm md:text-lg font-semibold">
             Today&apos;s activity
           </h2>
           <Link
             href="/log"
-            className="text-sm font-semibold text-accent hover:underline"
+            className="text-xs md:text-sm font-semibold text-accent hover:underline"
           >
             View all
           </Link>
         </div>
         {recent.length === 0 ? (
-          <p className="rounded-xl border border-dashed border-accent/30 bg-accent-soft/30 p-6 text-center text-sm text-muted-foreground">
+          <p className="rounded-xl border border-dashed border-accent/30 bg-accent-soft/30 p-6 text-center text-xs md:text-sm text-muted-foreground">
             Nothing logged yet today. Tap the + button to add your first entry.
           </p>
         ) : (
