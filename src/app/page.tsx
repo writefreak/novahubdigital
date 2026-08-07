@@ -26,7 +26,7 @@ export default function DashboardPage() {
           Hello, Welcome Back 👋
         </h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Here&apos;s an overview of how NovaHub is doing today.
+          Here&apos;s an overview of how NovaHub Digital Center is doing today.
         </p>
       </div>
 

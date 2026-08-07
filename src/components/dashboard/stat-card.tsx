@@ -46,7 +46,7 @@ export function StatCard({
     >
       <div
         className={cn(
-          "relative isolate overflow-hidden rounded-2xl border p-5",
+          "relative isolate overflow-hidden rounded-2xl border md:p-5 p-3",
           emphasis
             ? "border-transparent shadow-md bg-accent/40"
             : "border-border bg-card shadow-md",
@@ -84,7 +84,7 @@ export function StatCard({
         >
           <p
             className={cn(
-              "text-sm font-medium",
+              "text-xs md:text-sm font-medium",
               emphasis ? "text-white/85" : "text-muted-foreground",
             )}
           >
@@ -98,7 +98,7 @@ export function StatCard({
                 : cn(toneSoft[tone], toneText[tone]),
             )}
           >
-            <Icon className="h-4 w-4" strokeWidth={2.5} />
+            <Icon className="md:h-4 md:w-4 h-3 w-3" strokeWidth={2.5} />
           </div>
         </div>
         <p
