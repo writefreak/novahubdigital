@@ -28,22 +28,22 @@
 }
 
 :root {
-  --background: #FBF9F7;
-  --foreground: #1B1815;
-  --card: #FFFFFF;
-  --border: #EAE4DE;
-  --muted: #F3EEE9;
-  --muted-foreground: #7C736A;
+  --background: #fbf9f7;
+  --foreground: #1b1815;
+  --card: #ffffff;
+  --border: #eae4de;
+  --muted: #f3eee9;
+  --muted-foreground: #7c736a;
 
-  --accent: #FF5A1F;
-  --accent-foreground: #FFFFFF;
-  --accent-soft: #FFE7D9;
+  --accent: #ff5a1f;
+  --accent-foreground: #ffffff;
+  --accent-soft: #ffe7d9;
 
-  --income: #1B8A57;
-  --income-soft: #E1F5EA;
+  --income: #1b8a57;
+  --income-soft: #e1f5ea;
 
-  --expense: #C43D2A;
-  --expense-soft: #FBE6E1;
+  --expense: #c43d2a;
+  --expense-soft: #fbe6e1;
 
   --radius: 1rem;
 }
@@ -54,7 +54,11 @@ body {
   font-family: var(--font-body), sans-serif;
 }
 
-h1, h2, h3, h4, .font-display {
+h1,
+h2,
+h3,
+h4,
+.font-display {
   font-family: var(--font-display), sans-serif;
 }
 
@@ -69,10 +73,32 @@ h1, h2, h3, h4, .font-display {
 
 /* subtle nova burst watermark, used once on the dashboard hero */
 .nova-burst {
-  background-image: radial-gradient(circle at 30% 30%, var(--accent-soft) 0%, transparent 60%);
+  background-image: radial-gradient(
+    circle at 30% 30%,
+    var(--accent-soft) 0%,
+    transparent 60%
+  );
 }
 
 @media print {
-  .no-print { display: none !important; }
-  body { background: white; }
+  .no-print {
+    display: none !important;
+  }
+  body {
+    background: white;
+  }
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+::-webkit-scrollbar-track {
+  background: var(--background);
+}
+::-webkit-scrollbar-thumb {
+  background: #7c736a;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-dim);
 }

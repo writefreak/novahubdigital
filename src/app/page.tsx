@@ -23,10 +23,10 @@ export default function DashboardPage() {
     <div className="flex flex-col gap-6">
       <div className="-mx-4 rounded-b-2xl px-4 pb-6 pt-1 lg:mx-0 lg:rounded-2xl lg:px-6 lg:py-6">
         <h1 className="font-display text-2xl font-bold tracking-tight lg:text-3xl">
-          Good day 👋
+          Hello, Welcome Back 👋
         </h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Here&apos;s how NovaHub is doing today.
+          Here&apos;s an overview of how NovaHub is doing today.
         </p>
       </div>
 
