@@ -3,7 +3,7 @@
 import * as React from "react";
 import { useRouter } from "next/navigation";
 import { useSignUp } from "@clerk/nextjs";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, ArrowLeft, RefreshCw } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -27,6 +27,7 @@ export function SignUpForm() {
   const [showPassword, setShowPassword] = React.useState(false);
   const [pendingVerification, setPendingVerification] = React.useState(false);
   const [formError, setFormError] = React.useState<string | null>(null);
+  const [isResending, setIsResending] = React.useState(false);
 
   const isSubmitting = fetchStatus === "fetching";
 
@@ -72,25 +73,21 @@ export function SignUpForm() {
       return;
     }
 
-    // In Clerk's new API, unverified email requires sending the verification code
-    const isEmailUnverified =
-      signUp.unverifiedFields?.includes("email_address") ||
-      signUp.status === "missing_requirements";
+    const { error: codeError } = await signUp.verifications.sendEmailCode();
 
-    if (isEmailUnverified) {
-      const { error: codeError } = await signUp.verifications.sendEmailCode();
-      if (codeError) {
-        setFormError(codeError.longMessage ?? "Failed to send code.");
-        showToast("error", codeError.longMessage ?? "Failed to send code.");
-        return;
-      }
-      setPendingVerification(true);
-      showToast("success", "Verification code sent to your email.");
-    } else {
-      const msg = "Additional verification steps are required.";
-      setFormError(msg);
-      showToast("error", msg);
+    if (codeError) {
+      setFormError(
+        codeError.longMessage ?? "Failed to send verification code.",
+      );
+      showToast(
+        "error",
+        codeError.longMessage ?? "Failed to send verification code.",
+      );
+      return;
     }
+
+    setPendingVerification(true);
+    showToast("success", "Verification code sent to your email.");
   }
 
   async function handleVerify(e: React.FormEvent) {
@@ -108,25 +105,57 @@ export function SignUpForm() {
       return;
     }
 
-    if (signUp.status === "complete") {
-      showToast("success", "Account created successfully!");
+    try {
+      showToast("success", "Account verified successfully!");
       await finalizeSignUp();
-    } else {
-      const msg = "Verification incomplete. Please check your details.";
+    } catch (finalizeErr: any) {
+      const msg = finalizeErr?.message ?? "Error finalizing registration.";
       setFormError(msg);
       showToast("error", msg);
     }
   }
 
+  async function handleResendCode() {
+    if (!signUp) return;
+    setFormError(null);
+    setIsResending(true);
+
+    const { error } = await signUp.verifications.sendEmailCode();
+    setIsResending(false);
+
+    if (error) {
+      const msg = error.longMessage ?? "Failed to resend code.";
+      setFormError(msg);
+      showToast("error", msg);
+      return;
+    }
+
+    showToast("success", "A new code has been sent to your email.");
+  }
+
   return (
     <Card className="w-full max-w-sm">
       <CardHeader>
-        <CardTitle>
+        <CardTitle className="flex items-center gap-2">
+          {pendingVerification && (
+            <button
+              type="button"
+              onClick={() => {
+                setPendingVerification(false);
+                setFormError(null);
+                setCode("");
+              }}
+              className="inline-flex items-center justify-center rounded-md p-1 text-muted-foreground transition-colors hover:text-foreground"
+              aria-label="Back to registration"
+            >
+              <ArrowLeft className="h-4 w-4" />
+            </button>
+          )}
           {pendingVerification ? "Verify Email" : "Create Account"}
         </CardTitle>
         <CardDescription>
           {pendingVerification
-            ? `Enter the code sent to ${email}`
+            ? `Enter the verification code sent to ${email}`
             : "Get started with NovaHub today."}
         </CardDescription>
       </CardHeader>
@@ -213,6 +242,31 @@ export function SignUpForm() {
             <Button type="submit" disabled={isSubmitting}>
               {isSubmitting ? "Verifying..." : "Verify Code"}
             </Button>
+
+            <div className="flex items-center justify-between pt-2 text-xs text-muted-foreground">
+              <button
+                type="button"
+                onClick={() => {
+                  setPendingVerification(false);
+                  setFormError(null);
+                  setCode("");
+                }}
+                className="flex items-center gap-1 hover:underline"
+              >
+                Change Email
+              </button>
+              <button
+                type="button"
+                onClick={handleResendCode}
+                disabled={isResending || isSubmitting}
+                className="flex items-center gap-1 text-primary hover:underline disabled:opacity-50"
+              >
+                <RefreshCw
+                  className={`h-3 w-3 ${isResending ? "animate-spin" : ""}`}
+                />
+                {isResending ? "Resending..." : "Resend Code"}
+              </button>
+            </div>
           </form>
         )}
       </CardContent>
