@@ -1,7 +1,7 @@
 import { createServerClient, type CookieOptions } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
-const PUBLIC_PATHS = ["/sign-in", "/sign-up"];
+const PUBLIC_PATHS = ["/signin", "/signup"];
 
 function isPublicPath(pathname: string) {
   if (PUBLIC_PATHS.includes(pathname)) return true;
@@ -42,12 +42,12 @@ export async function updateSession(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   if (!user && !isPublicPath(pathname)) {
-    const redirectUrl = new URL("/sign-in", request.url);
+    const redirectUrl = new URL("/signin", request.url);
     redirectUrl.searchParams.set("next", pathname);
     return NextResponse.redirect(redirectUrl);
   }
 
-  if (user && (pathname === "/sign-in" || pathname === "/sign-up")) {
+  if (user && (pathname === "/signin" || pathname === "/signup")) {
     return NextResponse.redirect(new URL("/", request.url));
   }
 

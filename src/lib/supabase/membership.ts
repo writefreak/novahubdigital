@@ -1,4 +1,5 @@
-import { createClient } from "@/lib/supabase/server";
+import { auth } from "@clerk/nextjs/server";
+import { createClient } from "./server";
 
 export type Role = "owner" | "full" | "add_only";
 
@@ -9,28 +10,57 @@ export type Membership = {
   role: Role;
 };
 
-// Every current user belongs to exactly one business (they either created
-// one on signup or were invited into one). If you ever let one person
-// belong to multiple cybercafes, this is the function to change — it'd
-// need a businessId argument instead of assuming "the" business.
 export async function requireMembership(): Promise<Membership> {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) throw new Error("Not signed in.");
+  const { userId } = await auth();
 
-  const { data, error } = await supabase
+  if (!userId) {
+    throw new Error("Not signed in.");
+  }
+
+  const supabase = await createClient();
+
+  // 1. Try to fetch existing membership
+  let { data, error } = await supabase
     .from("business_members")
     .select("business_id, role")
-    .eq("user_id", user.id)
-    .single();
+    .eq("user_id", userId)
+    .maybeSingle();
 
-  if (error || !data) throw new Error("No business membership found.");
+  // 2. If no membership exists (first-time login), create business automatically
+  if (!data) {
+    const { data: business, error: bizError } = await supabase
+      .from("businesses")
+      .insert({ name: "My Cybercafe" })
+      .select("id")
+      .single();
+
+    if (bizError || !business) {
+      throw new Error("Failed to initialize cybercafe business.");
+    }
+
+    await supabase.from("business_members").insert({
+      business_id: business.id,
+      user_id: userId,
+      role: "owner",
+    });
+
+    await supabase.from("services").insert([
+      { business_id: business.id, name: "Browsing 1hr", price: 300 },
+      { business_id: business.id, name: "Printing per page", price: 100 },
+      { business_id: business.id, name: "Scanning per page", price: 150 },
+      { business_id: business.id, name: "CV/Document Typing", price: 1000 },
+      { business_id: business.id, name: "Photocopy per page", price: 50 },
+    ]);
+
+    data = {
+      business_id: business.id,
+      role: "owner",
+    };
+  }
 
   return {
     supabase,
-    userId: user.id,
+    userId,
     businessId: data.business_id as string,
     role: data.role as Role,
   };

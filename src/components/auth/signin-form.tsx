@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { useRouter } from "next/navigation";
+import { useSignIn } from "@clerk/nextjs";
 import { Eye, EyeOff } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -13,39 +14,73 @@ import {
   CardTitle,
   CardDescription,
 } from "@/components/ui/card";
-import { createClient } from "@/lib/supabase/client";
 import { useToast } from "@/components/ui/toast";
 
 export function SignInForm() {
   const router = useRouter();
   const { showToast } = useToast();
+  const { signIn, errors: clerkErrors, fetchStatus } = useSignIn();
+
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
   const [showPassword, setShowPassword] = React.useState(false);
-  const [isSubmitting, setIsSubmitting] = React.useState(false);
-  const [error, setError] = React.useState<string | null>(null);
+  const [formError, setFormError] = React.useState<string | null>(null);
+
+  const isSubmitting = fetchStatus === "fetching";
+
+  async function finalizeSignIn() {
+    if (!signIn) return;
+    await signIn.finalize({
+      navigate: async ({ session, decorateUrl }) => {
+        if (session?.currentTask) {
+          return;
+        }
+        const url = decorateUrl("/");
+        if (url.startsWith("http")) {
+          window.location.href = url;
+        } else {
+          router.push(url);
+          router.refresh();
+        }
+      },
+    });
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setError(null);
-    setIsSubmitting(true);
+    setFormError(null);
 
-    const supabase = createClient();
-    const { error: signInError } = await supabase.auth.signInWithPassword({
-      email,
+    if (!signIn) return;
+
+    const { error } = await signIn.password({
+      identifier: email,
       password,
     });
 
-    if (signInError) {
-      setError(signInError.message);
-      showToast("error", signInError.message);
-      setIsSubmitting(false);
+    if (error) {
+      const msg = error.longMessage ?? "Incorrect email or password.";
+      setFormError(msg);
+      showToast("error", msg);
       return;
     }
 
-    showToast("success", "Signed in successfully!");
-    router.push("/");
-    router.refresh();
+    if (signIn.status === "complete") {
+      showToast("success", "Signed in successfully!");
+      await finalizeSignIn();
+    } else if (signIn.status === "needs_second_factor") {
+      const msg = "This account requires a second verification step.";
+      setFormError(msg);
+      showToast("error", msg);
+    } else if (signIn.status === "needs_client_trust") {
+      const msg =
+        "We don't recognize this device. Check your email to confirm it's you.";
+      setFormError(msg);
+      showToast("error", msg);
+    } else {
+      const msg = "Additional verification required.";
+      setFormError(msg);
+      showToast("error", msg);
+    }
   }
 
   return (
@@ -65,6 +100,11 @@ export function SignInForm() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
+            {clerkErrors?.fields?.identifier?.message && (
+              <p className="text-xs text-expense">
+                {clerkErrors.fields.identifier.message}
+              </p>
+            )}
           </div>
           <div className="flex flex-col gap-1.5">
             <Label htmlFor="password">Password</Label>
@@ -91,8 +131,17 @@ export function SignInForm() {
                 )}
               </button>
             </div>
+            {clerkErrors?.fields?.password?.message && (
+              <p className="text-xs text-expense">
+                {clerkErrors.fields.password.message}
+              </p>
+            )}
           </div>
-          {error && <p className="text-sm text-expense">{error}</p>}
+
+          <div id="clerk-captcha" />
+
+          {formError && <p className="text-sm text-expense">{formError}</p>}
+
           <Button type="submit" disabled={isSubmitting}>
             {isSubmitting ? "Signing in…" : "Sign in"}
           </Button>

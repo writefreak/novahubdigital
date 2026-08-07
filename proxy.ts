@@ -1,17 +1,14 @@
-import { type NextRequest } from "next/server";
-import { updateSession } from "@/lib/supabase/proxy";
+import { clerkMiddleware } from "@clerk/nextjs/server";
 
-export async function proxy(request: NextRequest) {
-  return updateSession(request);
-}
+export default clerkMiddleware();
 
 export const config = {
   matcher: [
-    /*
-     * Run on every route except static assets and Next internals.
-     * /report/[id] and /sign-in, /sign-up are still matched here — they're
-     * allowed through inside updateSession() itself (see isPublicPath).
-     */
-    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+    // Skip Next.js internals and all static files, unless found in search params
+    "/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
+    // Always run for Clerk's auto-proxy path
+    "/__clerk/:path*",
+    // Always run for API routes
+    "/(api|trpc)(.*)",
   ],
 };
