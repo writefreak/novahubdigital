@@ -34,14 +34,14 @@ export function BottomNav() {
                 )}
                 strokeWidth={2.25}
               />
-              <span
+              {/* <span
                 className={cn(
                   "relative text-[11px] font-semibold",
                   active ? "text-accent" : "text-muted-foreground",
                 )}
               >
                 {item.label}
-              </span>
+              </span> */}
             </Link>
           );
         })}
