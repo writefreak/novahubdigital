@@ -1,5 +1,6 @@
 import { auth } from "@clerk/nextjs/server";
 import { createClient } from "./server";
+import { redirect } from "next/navigation";
 
 export type Role = "owner" | "full" | "add_only";
 
@@ -14,7 +15,8 @@ export async function requireMembership(): Promise<Membership> {
   const { userId } = await auth();
 
   if (!userId) {
-    throw new Error("Not signed in.");
+    // Redirects the user immediately to the login page
+    redirect("/signin");
   }
 
   const supabase = await createClient();
