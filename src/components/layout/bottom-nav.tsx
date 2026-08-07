@@ -18,7 +18,7 @@ export function BottomNav() {
             <Link
               key={item.href}
               href={item.href}
-              className="relative flex flex-1 flex-col items-center gap-1 rounded-xl py-1.5"
+              className="relative flex flex-1 flex-col items-center gap-1 rounded-full py-1.5"
             >
               {active && (
                 <motion.div
@@ -30,14 +30,14 @@ export function BottomNav() {
               <item.icon
                 className={cn(
                   "relative h-5 w-5",
-                  active ? "text-accent" : "text-muted-foreground"
+                  active ? "text-accent" : "text-muted-foreground",
                 )}
                 strokeWidth={2.25}
               />
               <span
                 className={cn(
                   "relative text-[11px] font-semibold",
-                  active ? "text-accent" : "text-muted-foreground"
+                  active ? "text-accent" : "text-muted-foreground",
                 )}
               >
                 {item.label}
