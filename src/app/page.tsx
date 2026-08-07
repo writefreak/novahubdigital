@@ -21,7 +21,7 @@ export default function DashboardPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="nova-burst -mx-4 rounded-b-2xl px-4 pb-6 pt-1 lg:mx-0 lg:rounded-2xl lg:px-6 lg:py-6">
+      <div className="-mx-4 rounded-b-2xl px-4 pb-6 pt-1 lg:mx-0 lg:rounded-2xl lg:px-6 lg:py-6">
         <h1 className="font-display text-2xl font-bold tracking-tight lg:text-3xl">
           Good day 👋
         </h1>
@@ -30,13 +30,14 @@ export default function DashboardPage() {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4">
         <StatCard
           label="Today's sales"
           amount={income}
           icon={TrendingUp}
           tone="income"
           delay={0}
+          className="order-2 sm:order-1"
         />
         <StatCard
           label="Today's expenses"
@@ -44,13 +45,16 @@ export default function DashboardPage() {
           icon={TrendingDown}
           tone="expense"
           delay={0.05}
+          className="order-3 sm:order-2"
         />
         <StatCard
           label="Net today"
           amount={net}
           icon={Scale}
           tone="accent"
+          emphasis
           delay={0.1}
+          className="order-1 col-span-2 sm:order-3 sm:col-span-1"
         />
       </div>
 
@@ -69,7 +73,7 @@ export default function DashboardPage() {
           </Link>
         </div>
         {recent.length === 0 ? (
-          <p className="rounded-xl border border-dashed border-border p-6 text-center text-sm text-muted-foreground">
+          <p className="rounded-xl border border-dashed border-accent/30 bg-accent-soft/30 p-6 text-center text-sm text-muted-foreground">
             Nothing logged yet today. Tap the + button to add your first entry.
           </p>
         ) : (

@@ -2,7 +2,6 @@
 
 import { motion } from "framer-motion";
 import { cn, formatNaira } from "@/lib/utils";
-import { Card } from "@/components/ui/card";
 import type { LucideIcon } from "lucide-react";
 
 export function StatCard({
@@ -10,18 +9,32 @@ export function StatCard({
   amount,
   icon: Icon,
   tone,
+  emphasis = false,
   delay = 0,
+  className,
 }: {
   label: string;
   amount: number;
   icon: LucideIcon;
   tone: "accent" | "income" | "expense";
+  emphasis?: boolean;
   delay?: number;
+  className?: string;
 }) {
-  const toneStyles = {
-    accent: "bg-accent-soft text-accent",
-    income: "bg-income-soft text-income",
-    expense: "bg-expense-soft text-expense",
+  const toneText = {
+    accent: "text-accent",
+    income: "text-income",
+    expense: "text-expense",
+  };
+  const toneBg = {
+    accent: "bg-accent/40",
+    income: "bg-income/40",
+    expense: "bg-expense/40",
+  };
+  const toneSoft = {
+    accent: "bg-accent-soft",
+    income: "bg-income-soft",
+    expense: "bg-expense-soft",
   };
 
   return (
@@ -29,18 +42,75 @@ export function StatCard({
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.35, delay }}
+      className={cn("relative", className)}
     >
-      <Card className="p-5">
-        <div className="flex items-center justify-between">
-          <p className="text-sm font-medium text-muted-foreground">{label}</p>
-          <div className={cn("flex h-9 w-9 items-center justify-center rounded-full", toneStyles[tone])}>
-            <Icon className="h-4 w-4" strokeWidth={2.25} />
+      <div
+        className={cn(
+          "relative isolate overflow-hidden rounded-2xl border p-5",
+          emphasis
+            ? "border-transparent shadow-md bg-accent/40"
+            : "border-border bg-card shadow-md",
+        )}
+      >
+        {emphasis && (
+          <div
+            className="absolute inset-0 -z-10"
+            style={{
+              background:
+                "linear-gradient(135deg, #FF6A2E 0%, var(--accent) 55%, #E8480F 100%)",
+            }}
+          />
+        )}
+        {emphasis && (
+          <div
+            className="pointer-events-none absolute -right-6 -top-10 h-32 w-32 rounded-full -z-10"
+            style={{
+              background:
+                "radial-gradient(circle, rgba(255,255,255,0.25) 0%, transparent 70%)",
+            }}
+          />
+        )}
+        {!emphasis && (
+          <div
+            className={cn("absolute inset-y-0 left-0 w-[3px]", toneBg[tone])}
+          />
+        )}
+
+        <div
+          className={cn(
+            "flex items-center justify-between",
+            !emphasis && "pl-2",
+          )}
+        >
+          <p
+            className={cn(
+              "text-sm font-medium",
+              emphasis ? "text-white/85" : "text-muted-foreground",
+            )}
+          >
+            {label}
+          </p>
+          <div
+            className={cn(
+              "flex h-8 w-8 items-center justify-center rounded-full",
+              emphasis
+                ? "bg-white/20 text-white"
+                : cn(toneSoft[tone], toneText[tone]),
+            )}
+          >
+            <Icon className="h-4 w-4" strokeWidth={2.5} />
           </div>
         </div>
-        <p className="font-display mt-3 text-2xl font-bold tracking-tight lg:text-3xl">
+        <p
+          className={cn(
+            "font-display mt-3 text-[1.75rem] font-bold tracking-tight tabular-nums lg:text-3xl",
+            emphasis ? "text-white" : "text-foreground",
+            !emphasis && "pl-2",
+          )}
+        >
           {formatNaira(amount)}
         </p>
-      </Card>
+      </div>
     </motion.div>
   );
 }

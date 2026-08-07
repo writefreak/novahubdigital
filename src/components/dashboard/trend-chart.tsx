@@ -1,8 +1,19 @@
 "use client";
 
 import { Bar, BarChart, CartesianGrid, XAxis } from "recharts";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
-import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from "@/components/ui/chart";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+} from "@/components/ui/card";
+import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+  type ChartConfig,
+} from "@/components/ui/chart";
 import { useStore } from "@/lib/store";
 import { formatNaira } from "@/lib/utils";
 
@@ -22,37 +33,94 @@ export function TrendChart() {
 
   const data = days.map((date) => {
     const dayEntries = entries.filter((e) => e.date === date);
-    const income = dayEntries.filter((e) => e.type === "income").reduce((s, e) => s + e.amount, 0);
-    const expense = dayEntries.filter((e) => e.type === "expense").reduce((s, e) => s + e.amount, 0);
+    const income = dayEntries
+      .filter((e) => e.type === "income")
+      .reduce((s, e) => s + e.amount, 0);
+    const expense = dayEntries
+      .filter((e) => e.type === "expense")
+      .reduce((s, e) => s + e.amount, 0);
     return {
-      label: new Intl.DateTimeFormat("en-NG", { weekday: "short" }).format(new Date(date)),
+      label: new Intl.DateTimeFormat("en-NG", { weekday: "short" }).format(
+        new Date(date),
+      ),
       income,
       expense,
     };
   });
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>This week</CardTitle>
-        <CardDescription>Sales vs. expenses over the last 7 days</CardDescription>
+    <Card className="rounded-2xl border-border bg-card shadow-[0_1px_1px_rgba(27,24,21,0.04),0_8px_20px_-8px_rgba(27,24,21,0.10)]">
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+        <div>
+          <CardTitle className="font-display text-base font-semibold">
+            This week
+          </CardTitle>
+          <CardDescription className="text-xs">
+            Sales vs. expenses, last 7 days
+          </CardDescription>
+        </div>
+        <div className="flex items-center gap-3 text-[11px] font-semibold uppercase tracking-[0.06em] text-muted-foreground">
+          <span className="flex items-center gap-1.5">
+            <span className="h-2 w-2 rounded-full bg-income" />
+            Sales
+          </span>
+          <span className="flex items-center gap-1.5">
+            <span className="h-2 w-2 rounded-full bg-expense" />
+            Expenses
+          </span>
+        </div>
       </CardHeader>
-      <CardContent className="h-64 pt-4">
-        <ChartContainer config={chartConfig}>
-          <BarChart data={data} barGap={4}>
-            <CartesianGrid vertical={false} stroke="var(--border)" />
+      <CardContent className="h-60 pt-2">
+        <ChartContainer config={chartConfig} className="h-full w-full">
+          <BarChart data={data} barGap={4} barCategoryGap="28%">
+            <defs>
+              <linearGradient id="incomeFill" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="var(--income)" stopOpacity={1} />
+                <stop
+                  offset="100%"
+                  stopColor="var(--income)"
+                  stopOpacity={0.7}
+                />
+              </linearGradient>
+              <linearGradient id="expenseFill" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="var(--expense)" stopOpacity={1} />
+                <stop
+                  offset="100%"
+                  stopColor="var(--expense)"
+                  stopOpacity={0.7}
+                />
+              </linearGradient>
+            </defs>
+            <CartesianGrid
+              vertical={false}
+              stroke="var(--border)"
+              strokeDasharray="3 3"
+            />
             <XAxis
               dataKey="label"
               tickLine={false}
               axisLine={false}
+              tickMargin={10}
               tick={{ fontSize: 12, fill: "var(--muted-foreground)" }}
             />
             <ChartTooltip
-              cursor={{ fill: "var(--muted)" }}
-              content={<ChartTooltipContent formatter={(v) => formatNaira(v)} />}
+              cursor={{ fill: "var(--muted)", radius: 6 }}
+              content={
+                <ChartTooltipContent formatter={(v) => formatNaira(v)} />
+              }
             />
-            <Bar dataKey="income" fill="var(--color-income)" radius={[4, 4, 0, 0]} />
-            <Bar dataKey="expense" fill="var(--color-expense)" radius={[4, 4, 0, 0]} />
+            <Bar
+              dataKey="income"
+              fill="url(#incomeFill)"
+              radius={[6, 6, 0, 0]}
+              maxBarSize={22}
+            />
+            <Bar
+              dataKey="expense"
+              fill="url(#expenseFill)"
+              radius={[6, 6, 0, 0]}
+              maxBarSize={22}
+            />
           </BarChart>
         </ChartContainer>
       </CardContent>
