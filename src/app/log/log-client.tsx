@@ -1,12 +1,11 @@
 "use client";
 
 import * as React from "react";
-import { useStore, useInitStore } from "@/lib/store";
+import { useStore } from "@/lib/store";
 import { EntryItem } from "@/components/log/entry-item";
 import { formatDay, todayStr } from "@/lib/utils";
 
-export default function LogPage() {
-  useInitStore();
+export default function LogPageClient() {
   const entries = useStore((s) => s.entries);
   const [date, setDate] = React.useState(todayStr());
 

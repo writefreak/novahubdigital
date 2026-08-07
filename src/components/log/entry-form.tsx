@@ -40,6 +40,8 @@ export function EntryForm({
   const [amount, setAmount] = React.useState("");
   const [item, setItem] = React.useState("");
   const [note, setNote] = React.useState("");
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const [error, setError] = React.useState<string | null>(null);
 
   function reset() {
     setCustomerName("");
@@ -47,6 +49,7 @@ export function EntryForm({
     setAmount("");
     setItem("");
     setNote("");
+    setError(null);
   }
 
   function handleServiceChange(id: string) {
@@ -55,34 +58,44 @@ export function EntryForm({
     if (svc) setAmount(String(svc.price));
   }
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     const numAmount = Number(amount);
     if (!numAmount || numAmount <= 0) return;
 
-    if (type === "income") {
-      if (!customerName.trim()) return;
-      const svc = services.find((s) => s.id === serviceId);
-      addEntry({
-        type: "income",
-        date: todayStr(),
-        amount: numAmount,
-        customerName: customerName.trim(),
-        serviceId: svc?.id,
-        serviceName: svc?.name,
-      });
-    } else {
-      if (!item.trim()) return;
-      addEntry({
-        type: "expense",
-        date: todayStr(),
-        amount: numAmount,
-        item: item.trim(),
-        note: note.trim() || undefined,
-      });
+    setError(null);
+    setIsSubmitting(true);
+    try {
+      if (type === "income") {
+        if (!customerName.trim()) return;
+        const svc = services.find((s) => s.id === serviceId);
+        await addEntry({
+          type: "income",
+          date: todayStr(),
+          amount: numAmount,
+          customerName: customerName.trim(),
+          serviceId: svc?.id,
+          serviceName: svc?.name,
+        });
+      } else {
+        if (!item.trim()) return;
+        await addEntry({
+          type: "expense",
+          date: todayStr(),
+          amount: numAmount,
+          item: item.trim(),
+          note: note.trim() || undefined,
+        });
+      }
+      reset();
+      onOpenChange(false);
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : "Couldn't save. Try again.",
+      );
+    } finally {
+      setIsSubmitting(false);
     }
-    reset();
-    onOpenChange(false);
   }
 
   return (
@@ -138,8 +151,9 @@ export function EntryForm({
                   onChange={(e) => setAmount(e.target.value)}
                 />
               </div>
-              <Button type="submit" className="mt-1">
-                Save sale
+              {error && <p className="text-sm text-expense">{error}</p>}
+              <Button type="submit" className="mt-1" disabled={isSubmitting}>
+                {isSubmitting ? "Saving…" : "Save sale"}
               </Button>
             </TabsContent>
 
@@ -173,8 +187,14 @@ export function EntryForm({
                   onChange={(e) => setNote(e.target.value)}
                 />
               </div>
-              <Button type="submit" variant="destructive" className="mt-1">
-                Save expense
+              {error && <p className="text-sm text-expense">{error}</p>}
+              <Button
+                type="submit"
+                variant="destructive"
+                className="mt-1"
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? "Saving…" : "Save expense"}
               </Button>
             </TabsContent>
           </form>

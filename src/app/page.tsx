@@ -4,13 +4,18 @@ import { TrendingUp, TrendingDown, Scale } from "lucide-react";
 import { StatCard } from "@/components/dashboard/stat-card";
 import { TrendChart } from "@/components/dashboard/trend-chart";
 import { EntryItem } from "@/components/log/entry-item";
-import { useTodayEntries } from "@/lib/store";
+import { useTodayEntries, useInitStore } from "@/lib/store";
 import Link from "next/link";
 
 export default function DashboardPage() {
+  useInitStore();
   const todayEntries = useTodayEntries();
-  const income = todayEntries.filter((e) => e.type === "income").reduce((s, e) => s + e.amount, 0);
-  const expense = todayEntries.filter((e) => e.type === "expense").reduce((s, e) => s + e.amount, 0);
+  const income = todayEntries
+    .filter((e) => e.type === "income")
+    .reduce((s, e) => s + e.amount, 0);
+  const expense = todayEntries
+    .filter((e) => e.type === "expense")
+    .reduce((s, e) => s + e.amount, 0);
   const net = income - expense;
   const recent = todayEntries.slice(0, 5);
 
@@ -26,17 +31,40 @@ export default function DashboardPage() {
       </div>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-        <StatCard label="Today's sales" amount={income} icon={TrendingUp} tone="income" delay={0} />
-        <StatCard label="Today's expenses" amount={expense} icon={TrendingDown} tone="expense" delay={0.05} />
-        <StatCard label="Net today" amount={net} icon={Scale} tone="accent" delay={0.1} />
+        <StatCard
+          label="Today's sales"
+          amount={income}
+          icon={TrendingUp}
+          tone="income"
+          delay={0}
+        />
+        <StatCard
+          label="Today's expenses"
+          amount={expense}
+          icon={TrendingDown}
+          tone="expense"
+          delay={0.05}
+        />
+        <StatCard
+          label="Net today"
+          amount={net}
+          icon={Scale}
+          tone="accent"
+          delay={0.1}
+        />
       </div>
 
       <TrendChart />
 
       <div>
         <div className="mb-3 flex items-center justify-between">
-          <h2 className="font-display text-lg font-semibold">Today&apos;s activity</h2>
-          <Link href="/log" className="text-sm font-semibold text-accent hover:underline">
+          <h2 className="font-display text-lg font-semibold">
+            Today&apos;s activity
+          </h2>
+          <Link
+            href="/log"
+            className="text-sm font-semibold text-accent hover:underline"
+          >
             View all
           </Link>
         </div>

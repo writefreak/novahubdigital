@@ -3,7 +3,7 @@
 import * as React from "react";
 import { motion } from "framer-motion";
 import { Pencil, Trash2, Plus } from "lucide-react";
-import { useStore } from "@/lib/store";
+import { useStore, useInitStore } from "@/lib/store";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ServiceForm } from "@/components/services/service-form";
@@ -11,6 +11,7 @@ import { formatNaira } from "@/lib/utils";
 import type { Service } from "@/lib/types";
 
 export default function ServicesPage() {
+  useInitStore();
   const services = useStore((s) => s.services);
   const removeService = useStore((s) => s.removeService);
 
@@ -31,7 +32,9 @@ export default function ServicesPage() {
     <div className="flex flex-col gap-5">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="font-display text-2xl font-bold tracking-tight">Services</h1>
+          <h1 className="font-display text-2xl font-bold tracking-tight">
+            Services
+          </h1>
           <p className="mt-1 text-sm text-muted-foreground">
             What NovaHub offers, and what it costs.
           </p>
@@ -58,7 +61,12 @@ export default function ServicesPage() {
                 </p>
               </div>
               <div className="flex shrink-0 gap-1">
-                <Button variant="ghost" size="icon" className="h-9 w-9" onClick={() => openEdit(service)}>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-9 w-9"
+                  onClick={() => openEdit(service)}
+                >
                   <Pencil className="h-4 w-4" />
                 </Button>
                 <Button
@@ -75,7 +83,11 @@ export default function ServicesPage() {
         ))}
       </div>
 
-      <ServiceForm open={formOpen} onOpenChange={setFormOpen} editing={editing} />
+      <ServiceForm
+        open={formOpen}
+        onOpenChange={setFormOpen}
+        editing={editing}
+      />
     </div>
   );
 }
