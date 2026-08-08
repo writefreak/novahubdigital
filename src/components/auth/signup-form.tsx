@@ -91,6 +91,31 @@ export function SignUpForm() {
     showToast("success", "Verification code sent to your email.");
   }
 
+  // async function handleVerify(e: React.FormEvent) {
+  //   e.preventDefault();
+  //   setFormError(null);
+
+  //   if (!signUp) return;
+
+  //   const { error } = await signUp.verifications.verifyEmailCode({ code });
+
+  //   if (error) {
+  //     const msg = error.longMessage ?? "Invalid verification code.";
+  //     setFormError(msg);
+  //     showToast("error", msg);
+  //     return;
+  //   }
+
+  //   try {
+  //     showToast("success", "Account verified successfully!");
+  //     await finalizeSignUp();
+  //   } catch (finalizeErr: any) {
+  //     const msg = finalizeErr?.message ?? "Error finalizing registration.";
+  //     setFormError(msg);
+  //     showToast("error", msg);
+  //   }
+  // }
+
   async function handleVerify(e: React.FormEvent) {
     e.preventDefault();
     setFormError(null);
@@ -100,22 +125,28 @@ export function SignUpForm() {
     const { error } = await signUp.verifications.verifyEmailCode({ code });
 
     if (error) {
-      const msg = error.longMessage ?? "Invalid verification code.";
+      const msg =
+        error.longMessage ?? error.message ?? "Invalid verification code.";
       setFormError(msg);
       showToast("error", msg);
       return;
     }
 
-    try {
-      showToast("success", "Account verified successfully!");
-      await finalizeSignUp();
-    } catch (finalizeErr: any) {
-      const msg = finalizeErr?.message ?? "Error finalizing registration.";
-      setFormError(msg);
-      showToast("error", msg);
+    if (signUp.status === "complete") {
+      try {
+        showToast("success", "Account verified successfully!");
+        await finalizeSignUp();
+      } catch (finalizeErr: any) {
+        const msg = finalizeErr?.message ?? "Error finalizing registration.";
+        setFormError(msg);
+        showToast("error", msg);
+      }
+    } else {
+      setFormError(
+        `Registration incomplete. Status: ${signUp.status}. Check required attributes in Clerk Dashboard.`,
+      );
     }
   }
-
   async function handleResendCode() {
     if (!signUp) return;
     setFormError(null);
