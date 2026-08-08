@@ -34,46 +34,34 @@ export function TeamClient({
     e.preventDefault();
     setError(null);
 
-    // ✅ FIXED: Synchronous callback wrapping the async execution
     startTransition(() => {
-      (async () => {
-        try {
-          await inviteMemberAction(email, role);
+      inviteMemberAction(email, role)
+        .then(() => {
           setEmail("");
-        } catch (err) {
+        })
+        .catch((err) => {
           setError(
             err instanceof Error ? err.message : "Something went wrong.",
           );
-        }
-      })();
+        });
     });
   }
 
   function handleRoleChange(userId: string, newRole: AccessRole) {
+    setError(null);
     startTransition(() => {
-      (async () => {
-        try {
-          await updateMemberRoleAction(userId, newRole);
-        } catch (err) {
-          setError(
-            err instanceof Error ? err.message : "Something went wrong.",
-          );
-        }
-      })();
+      updateMemberRoleAction(userId, newRole).catch((err) => {
+        setError(err instanceof Error ? err.message : "Something went wrong.");
+      });
     });
   }
 
   function handleRemove(userId: string) {
+    setError(null);
     startTransition(() => {
-      (async () => {
-        try {
-          await removeMemberAction(userId);
-        } catch (err) {
-          setError(
-            err instanceof Error ? err.message : "Something went wrong.",
-          );
-        }
-      })();
+      removeMemberAction(userId).catch((err) => {
+        setError(err instanceof Error ? err.message : "Something went wrong.");
+      });
     });
   }
 
