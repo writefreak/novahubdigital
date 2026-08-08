@@ -33,33 +33,47 @@ export function TeamClient({
   function handleInvite(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
-    startTransition(async () => {
-      try {
-        await inviteMemberAction(email, role);
-        setEmail("");
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "Something went wrong.");
-      }
+
+    // ✅ FIXED: Synchronous callback wrapping the async execution
+    startTransition(() => {
+      (async () => {
+        try {
+          await inviteMemberAction(email, role);
+          setEmail("");
+        } catch (err) {
+          setError(
+            err instanceof Error ? err.message : "Something went wrong.",
+          );
+        }
+      })();
     });
   }
 
   function handleRoleChange(userId: string, newRole: AccessRole) {
-    startTransition(async () => {
-      try {
-        await updateMemberRoleAction(userId, newRole);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "Something went wrong.");
-      }
+    startTransition(() => {
+      (async () => {
+        try {
+          await updateMemberRoleAction(userId, newRole);
+        } catch (err) {
+          setError(
+            err instanceof Error ? err.message : "Something went wrong.",
+          );
+        }
+      })();
     });
   }
 
   function handleRemove(userId: string) {
-    startTransition(async () => {
-      try {
-        await removeMemberAction(userId);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "Something went wrong.");
-      }
+    startTransition(() => {
+      (async () => {
+        try {
+          await removeMemberAction(userId);
+        } catch (err) {
+          setError(
+            err instanceof Error ? err.message : "Something went wrong.",
+          );
+        }
+      })();
     });
   }
 

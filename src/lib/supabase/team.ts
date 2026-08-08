@@ -57,14 +57,32 @@ export async function inviteMemberAction(
 
   const client = await clerkClient();
 
-  // Create invitation through Clerk
-  await client.invitations.createInvitation({
-    emailAddress: email,
-    publicMetadata: {
-      invited_business_id: businessId,
-      invited_role: role,
-    },
-  });
+  try {
+    // Create invitation through Clerk
+    await client.invitations.createInvitation({
+      emailAddress: email,
+      publicMetadata: {
+        invited_business_id: businessId,
+        invited_role: role,
+      },
+    });
+  } catch (err: any) {
+    const isDuplicate = err?.errors?.some(
+      (e: any) => e.code === "duplicate_record",
+    );
+
+    if (isDuplicate) {
+      throw new Error(
+        `An invitation has already been sent to ${email}. Please check pending invites.`,
+      );
+    }
+
+    const message =
+      err?.errors?.[0]?.longMessage ||
+      err?.message ||
+      "Failed to send invitation.";
+    throw new Error(message);
+  }
 
   revalidatePath("/team");
 }
