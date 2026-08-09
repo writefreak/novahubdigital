@@ -20,15 +20,15 @@ export default function DashboardPage() {
   const recent = todayEntries.slice(0, 5);
 
   return (
-    <div className="flex flex-col gap-6">
-      <div className="rounded-b-2xl pb-6 pt-1 lg:mx-0 lg:rounded-2xl lg:px-6 lg:py-6">
+    <div className="flex flex-col gap-6 bg-white">
+      {/* <div className="rounded-b-2xl pb-6 pt-1 lg:mx-0 lg:rounded-2xl lg:px-6 lg:py-6">
         <h1 className="font-display text-2xl font-bold tracking-tight lg:text-3xl">
           Hello, Welcome Back 👋
         </h1>
         <p className="mt-1 text-sm text-muted-foreground">
           Here&apos;s an overview of how NovaHub Digital Center is doing today.
         </p>
-      </div>
+      </div> */}
 
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4">
         <StatCard

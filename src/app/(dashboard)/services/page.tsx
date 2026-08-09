@@ -30,22 +30,30 @@ export default function ServicesPage() {
 
   return (
     <div className="flex flex-col gap-5">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col md:flex-row md:items-center justify-between">
         <div>
-          <h1 className="font-displaytext-xl md:text-2xl  font-bold tracking-tight">
+          <h1 className="font-display text-xl md:text-2xl  font-bold tracking-tight">
             Services
           </h1>
           <p className="mt-1 text-xs md:text-sm text-muted-foreground">
             What NovaHub offers, and what it costs.
           </p>
         </div>
-        <Button onClick={openNew} size="sm">
-          <Plus className="h-4 w-4" />
-          <span className="hidden sm:inline">Add service</span>
-        </Button>
+        <div className="md:hidden pt-5">
+          <Button onClick={openNew} size="sm">
+            <Plus className="h-4 w-4" />
+            <span className="">Add service</span>
+          </Button>
+        </div>
+        <div className="md:inline hidden">
+          <Button onClick={openNew} size="sm">
+            <Plus className="h-4 w-4" />
+            <span className="hidden sm:inline">Add service</span>
+          </Button>
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-2 md:gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {services.map((service, i) => (
           <motion.div
             key={service.id}

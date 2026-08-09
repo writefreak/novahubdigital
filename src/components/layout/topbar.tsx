@@ -47,7 +47,7 @@ export function Topbar() {
     // Give the user a moment to see the toast before redirecting
     setTimeout(async () => {
       await signOut({ redirectUrl: "/signin" });
-    }, 1200);
+    }, 600);
   };
 
   return (
@@ -82,8 +82,8 @@ export function Topbar() {
             </button>
 
             <div className="flex flex-col min-w-0">
-              <p className="truncate text-xs font-semibold text-foreground md:text-sm max-w-[150px] sm:max-w-xs md:max-w-none">
-                {primaryEmail}
+              <p className="truncate text-xs font-semibold text-foreground md:text-sm max-w-sm sm:max-w-xs md:max-w-none">
+                Hello, Welcome Back 👋
               </p>
               <p className="text-xs text-muted-foreground">{today}</p>
             </div>
