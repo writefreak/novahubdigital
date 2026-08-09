@@ -87,7 +87,7 @@ export function TeamClient({
         ))}
       </ul>
 
-      {isOwner && (
+      {/* {isOwner && (
         <form
           onSubmit={handleInvite}
           className="w-full min-w-0 space-y-4 rounded-xl border border-dashed border-border bg-card/50 p-4 sm:p-5"
@@ -148,7 +148,7 @@ export function TeamClient({
             {pending ? "Sending…" : "Send invite"}
           </button>
         </form>
-      )}
+      )} */}
     </div>
   );
 }

@@ -26,7 +26,7 @@ export function ReportView({
 
   return (
     <div className="flex flex-col gap-5">
-      <Card className="shadow-none">
+      <Card className="">
         <CardHeader className="flex-row items-start justify-between gap-3">
           <div>
             <CardTitle className="text-base md:text-lg">
@@ -48,19 +48,19 @@ export function ReportView({
           </Button>
         </CardHeader>
         <CardContent className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-          <Card className="p-4 bg-muted/30 border-border/60">
+          <Card className="p-4 bg-muted/30 border-border/60 shadow-none">
             <p className="text-xs text-muted-foreground">Total sales</p>
             <p className="font-display mt-1 text-lg font-bold text-income">
               {formatNaira(totalIncome)}
             </p>
           </Card>
-          <Card className="p-4 bg-muted/30 border-border/60">
+          <Card className="p-4 bg-muted/30 border-border/60 shadow-none">
             <p className="text-xs text-muted-foreground">Total spent</p>
             <p className="font-display mt-1 text-lg font-bold text-expense">
               {formatNaira(totalExpense)}
             </p>
           </Card>
-          <Card className="p-4 bg-muted/30 border-border/60">
+          <Card className="p-4 bg-muted/30 border-border/60 shadow-none">
             <p className="text-xs text-muted-foreground">Net</p>
             <p className="font-display mt-1 text-lg font-bold text-accent">
               {formatNaira(totalIncome - totalExpense)}

@@ -14,35 +14,86 @@ export type MemberRow = {
   role: Role;
 };
 
+// export async function listMembersAction(): Promise<MemberRow[]> {
+//   const { supabase, businessId } = await requireMembership();
+
+//   const { data: members, error } = await supabase
+//     .from("business_members")
+//     .select("user_id, role")
+//     .eq("business_id", businessId);
+
+//   if (error) throw new Error(error.message);
+//   if (!members?.length) return [];
+
+//   // Fetch Clerk user details batching or looping with Clerk SDK
+//   const client = await clerkClient();
+//   const rows: MemberRow[] = [];
+
+//   for (const m of members) {
+//     let email = "(unknown)";
+//     try {
+//       const user = await client.users.getUser(m.user_id);
+//       email = user.emailAddresses[0]?.emailAddress ?? "(unknown)";
+//     } catch {
+//       // Handles cases where a user might be deleted in Clerk
+//     }
+
+//     rows.push({
+//       userId: m.user_id,
+//       email,
+//       role: m.role as Role,
+//     });
+//   }
+
+//   return rows;
+// }
+
 export async function listMembersAction(): Promise<MemberRow[]> {
   const { supabase, businessId } = await requireMembership();
+  const client = await clerkClient();
 
-  const { data: members, error } = await supabase
+  // 1. Fetch current rows from Supabase
+  const { data: dbMembers, error } = await supabase
     .from("business_members")
     .select("user_id, role")
     .eq("business_id", businessId);
 
   if (error) throw new Error(error.message);
-  if (!members?.length) return [];
 
-  // Fetch Clerk user details batching or looping with Clerk SDK
-  const client = await clerkClient();
+  const existingUserIds = new Set((dbMembers || []).map((m) => m.user_id));
+
+  // 2. Fetch all users from Clerk
+  const clerkUsers = await client.users.getUserList({ limit: 100 });
+
   const rows: MemberRow[] = [];
 
-  for (const m of members) {
-    let email = "(unknown)";
-    try {
-      const user = await client.users.getUser(m.user_id);
-      email = user.emailAddresses[0]?.emailAddress ?? "(unknown)";
-    } catch {
-      // Handles cases where a user might be deleted in Clerk
-    }
+  for (const user of clerkUsers.data) {
+    const userBusinessId = user.publicMetadata?.invited_business_id;
+    const isAlreadyInDb = existingUserIds.has(user.id);
 
-    rows.push({
-      userId: m.user_id,
-      email,
-      role: m.role as Role,
-    });
+    // If the user belongs to this business
+    if (isAlreadyInDb || userBusinessId === businessId) {
+      const email = user.emailAddresses[0]?.emailAddress ?? "(unknown)";
+      const role =
+        (user.publicMetadata?.invited_role as Role) ||
+        (dbMembers?.find((m) => m.user_id === user.id)?.role as Role) ||
+        "add_only";
+
+      // If they signed up via Clerk invite but haven't been inserted into Supabase yet, insert now
+      if (!isAlreadyInDb && userBusinessId === businessId) {
+        await supabase.from("business_members").insert({
+          business_id: businessId,
+          user_id: user.id,
+          role: role,
+        });
+      }
+
+      rows.push({
+        userId: user.id,
+        email,
+        role,
+      });
+    }
   }
 
   return rows;
