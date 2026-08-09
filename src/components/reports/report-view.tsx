@@ -67,7 +67,7 @@ export function ReportView({
         <CardHeader className="flex-row items-start justify-between gap-3">
           <div>
             <CardTitle className="text-base md:text-lg">
-              {rangeLabel}'s report
+              {rangeLabel} report
             </CardTitle>
             <CardDescription className="text-xs md:text-sm text-muted-foreground">
               Plain summary for NovaHub, ready to read or print.
