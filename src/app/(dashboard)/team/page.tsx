@@ -6,6 +6,7 @@ import { listMembersAction } from "@/lib/supabase/team";
 export default async function TeamPage() {
   const { userId } = await requireMembership();
   const members = await listMembersAction();
+  console.log(members);
 
   return <TeamClient members={members} currentUserId={userId ?? ""} />;
 }
