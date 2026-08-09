@@ -92,9 +92,7 @@ export default function ServicesPage() {
 
                 {/* Service Details */}
                 <div className="min-w-0">
-                  <p className="truncate text-sm font-semibold">
-                    {service.name}
-                  </p>
+                  <p className="truncate text-sm">{service.name}</p>
                   <p className="font-display mt-0.5 text-base font-bold text-accent">
                     {formatNaira(service.price)}
                   </p>
