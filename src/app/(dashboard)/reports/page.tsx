@@ -57,7 +57,11 @@ export default function ReportsPage() {
         ))}
       </div>
 
-      <ReportView entries={filtered} rangeLabel={rangeLabel} />
+      <ReportView
+        entries={filtered}
+        rangeLabel={rangeLabel}
+        dateStr={todayStr()}
+      />
     </div>
   );
 }

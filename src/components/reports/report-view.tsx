@@ -1,6 +1,7 @@
 "use client";
 
-import { Printer } from "lucide-react";
+import * as React from "react";
+import { Printer, Share2, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -15,14 +16,50 @@ import type { Entry } from "@/lib/types";
 export function ReportView({
   entries,
   rangeLabel,
+  dateStr, // e.g., "2026-08-09" passed from parent
 }: {
   entries: Entry[];
   rangeLabel: string;
+  dateStr?: string;
 }) {
+  const [copied, setCopied] = React.useState(false);
+
   const income = entries.filter((e) => e.type === "income");
   const expenses = entries.filter((e) => e.type === "expense");
   const totalIncome = income.reduce((s, e) => s + e.amount, 0);
   const totalExpense = expenses.reduce((s, e) => s + e.amount, 0);
+
+  async function handleShare() {
+    const targetDate = dateStr || new Date().toISOString().slice(0, 10);
+
+    // Force https on your exact current host and path
+    const protocol = "https:";
+    const host = window.location.host;
+    const pathname = window.location.pathname;
+
+    const shareUrl = `${protocol}//${host}${pathname}/share?date=${targetDate}`;
+
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: `NovaHub Report - ${rangeLabel}`,
+          text: `Financial report for ${rangeLabel}`,
+          url: shareUrl,
+        });
+        return;
+      } catch (err) {
+        // Fallback if user cancels
+      }
+    }
+
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.error("Failed to copy share link:", err);
+    }
+  }
 
   return (
     <div className="flex flex-col gap-5">
@@ -30,22 +67,36 @@ export function ReportView({
         <CardHeader className="flex-row items-start justify-between gap-3">
           <div>
             <CardTitle className="text-base md:text-lg">
-              {" "}
               {rangeLabel}'s report
             </CardTitle>
             <CardDescription className="text-xs md:text-sm text-muted-foreground">
               Plain summary for NovaHub, ready to read or print.
             </CardDescription>
           </div>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => window.print()}
-            className="no-print shrink-0"
-          >
-            <Printer className="h-4 w-4" />
-            <span className="hidden sm:inline">Print</span>
-          </Button>
+          <div className="no-print flex items-center gap-2 shrink-0">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleShare}
+              className="gap-1.5"
+            >
+              {copied ? (
+                <>
+                  <Check className="h-4 w-4 text-emerald-500" />
+                  <span className="hidden sm:inline">Copied</span>
+                </>
+              ) : (
+                <>
+                  <Share2 className="h-4 w-4" />
+                  <span className="hidden sm:inline">Share</span>
+                </>
+              )}
+            </Button>
+            <Button variant="outline" size="sm" onClick={() => window.print()}>
+              <Printer className="h-4 w-4" />
+              <span className="hidden sm:inline">Print</span>
+            </Button>
+          </div>
         </CardHeader>
         <CardContent className="grid grid-cols-1 gap-3 sm:grid-cols-3">
           <Card className="p-4 bg-muted/30 border-border/60 shadow-none">
