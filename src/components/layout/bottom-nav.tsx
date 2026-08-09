@@ -10,38 +10,34 @@ export function BottomNav() {
   const pathname = usePathname();
 
   return (
-    <nav className="no-print fixed bottom-0 left-0 right-0 z-40 border-t border-border bg-card/95 backdrop-blur lg:hidden">
-      <div className="mx-auto flex max-w-md items-center justify-around px-2 py-2 pb-[max(0.5rem,env(safe-area-inset-bottom))]">
+    <nav className="no-print fixed bottom-4 left-1/2 z-40 w-[calc(100%-2rem)] max-w-sm -translate-x-1/2 lg:hidden">
+      <div className="flex items-center justify-around rounded-full bg-card/95 px-2 py-1 shadow-md backdrop-blur border border-border/50">
         {navItems.map((item) => {
           const active = pathname === item.href;
+
           return (
             <Link
               key={item.href}
               href={item.href}
-              className="relative flex flex-1 flex-col items-center gap-1 rounded-full py-1.5"
+              className="relative flex h-10 w-10 items-center justify-center rounded-full"
             >
               {active && (
                 <motion.div
                   layoutId="bottom-nav-active"
-                  className="absolute inset-x-3 inset-y-0 rounded-xl bg-accent-soft"
-                  transition={{ type: "spring", stiffness: 400, damping: 32 }}
+                  className="absolute inset-0 rounded-full bg-accent"
+                  transition={{ type: "spring", stiffness: 400, damping: 30 }}
                 />
               )}
+
               <item.icon
                 className={cn(
-                  "relative h-5 w-5",
-                  active ? "text-accent" : "text-muted-foreground",
+                  "relative z-10 h-4 w-4 transition-colors",
+                  active
+                    ? "text-accent-foreground"
+                    : "text-muted-foreground hover:text-foreground",
                 )}
                 strokeWidth={2.25}
               />
-              {/* <span
-                className={cn(
-                  "relative text-[11px] font-semibold",
-                  active ? "text-accent" : "text-muted-foreground",
-                )}
-              >
-                {item.label}
-              </span> */}
             </Link>
           );
         })}
