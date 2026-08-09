@@ -57,7 +57,7 @@ export function MemberCard({
         </div>
       </div>
 
-      <div className="flex min-w-0 items-center gap-2 sm:w-auto">
+      <div className="flex min-w-0 items-center justify-end gap-2 sm:w-auto">
         {/* Render Delete Account ONLY for the logged-in user's own card */}
         {isMe ? (
           <button
