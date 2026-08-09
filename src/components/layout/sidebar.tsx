@@ -13,8 +13,12 @@ export function Sidebar() {
     <aside className="hidden lg:sticky lg:top-0 lg:z-40 lg:flex lg:h-screen lg:w-64 lg:flex-col lg:overflow-y-auto lg:border-r lg:border-border lg:bg-accent-foreground lg:px-4 lg:py-6 shadow-md">
       <div className="flex items-center gap-2.5 px-2 pb-8">
         <div>
-          <p className="font-display text-lg font-bold leading-none">NovaHub</p>
-          <p className="text-xs text-muted-foreground mt-1">Cafe dashboard</p>
+          <p className="font-display text-accent text-lg font-bold leading-none">
+            NovaHub Digital
+          </p>
+          <p className="text-xs text-muted-foreground mt-1">
+            Report management dashboard
+          </p>
         </div>
       </div>
 
