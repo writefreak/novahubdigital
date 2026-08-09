@@ -11,7 +11,7 @@ export function Sidebar() {
 
   return (
     <aside className="hidden lg:sticky lg:top-0 lg:z-40 lg:flex lg:h-screen lg:w-64 lg:flex-col lg:overflow-y-auto lg:border-r lg:border-border lg:bg-accent-foreground lg:px-4 lg:py-6 shadow-md">
-      <div className="flex items-center gap-2.5 px-2 pb-8">
+      <div className="flex items-center gap-2.5 px-2 pb-4 pt-10 border-b border-border">
         <div>
           <p className="font-display text-accent text-lg font-bold leading-none">
             NovaHub Digital
@@ -22,7 +22,7 @@ export function Sidebar() {
         </div>
       </div>
 
-      <nav className="flex flex-col gap-1">
+      <nav className="flex flex-col gap-1 pt-10">
         {navItems.map((item) => {
           const active = pathname === item.href;
           return (
