@@ -48,8 +48,8 @@ export function StatCard({
         className={cn(
           "relative isolate overflow-hidden rounded-2xl border md:p-5 p-3",
           emphasis
-            ? "border-transparent shadow-md bg-accent/40"
-            : "border-border bg-card shadow-md",
+            ? "border-transparent shadow-sm bg-accent/40"
+            : "border-border bg-card shadow-sm",
         )}
       >
         {emphasis && (
