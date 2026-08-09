@@ -26,11 +26,14 @@ export function ReportView({
 
   return (
     <div className="flex flex-col gap-5">
-      <Card>
+      <Card className="shadow-none">
         <CardHeader className="flex-row items-start justify-between gap-3">
           <div>
-            <CardTitle>Report &mdash; {rangeLabel}</CardTitle>
-            <CardDescription>
+            <CardTitle className="text-base md:text-lg">
+              {" "}
+              {rangeLabel}'s report
+            </CardTitle>
+            <CardDescription className="text-xs md:text-sm text-muted-foreground">
               Plain summary for NovaHub, ready to read or print.
             </CardDescription>
           </div>
@@ -44,34 +47,34 @@ export function ReportView({
             <span className="hidden sm:inline">Print</span>
           </Button>
         </CardHeader>
-        <CardContent className="grid grid-cols-3 gap-3 pt-4">
-          <div>
+        <CardContent className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+          <Card className="p-4 bg-muted/30 border-border/60">
             <p className="text-xs text-muted-foreground">Total sales</p>
-            <p className="font-display text-lg font-bold text-income">
+            <p className="font-display mt-1 text-lg font-bold text-income">
               {formatNaira(totalIncome)}
             </p>
-          </div>
-          <div>
+          </Card>
+          <Card className="p-4 bg-muted/30 border-border/60">
             <p className="text-xs text-muted-foreground">Total spent</p>
-            <p className="font-display text-lg font-bold text-expense">
+            <p className="font-display mt-1 text-lg font-bold text-expense">
               {formatNaira(totalExpense)}
             </p>
-          </div>
-          <div>
+          </Card>
+          <Card className="p-4 bg-muted/30 border-border/60">
             <p className="text-xs text-muted-foreground">Net</p>
-            <p className="font-display text-lg font-bold text-accent">
+            <p className="font-display mt-1 text-lg font-bold text-accent">
               {formatNaira(totalIncome - totalExpense)}
             </p>
-          </div>
+          </Card>
         </CardContent>
       </Card>
 
       <div>
-        <h2 className="mb-2.5 font-display text-base font-semibold">
+        <h2 className="mb-2.5 font-display text-sm md:text-base font-semibold">
           Customers served
         </h2>
         {income.length === 0 ? (
-          <p className="text-sm text-muted-foreground">
+          <p className="text-xs md:text-sm text-muted-foreground">
             No customer sales in this period.
           </p>
         ) : (
@@ -79,7 +82,7 @@ export function ReportView({
             {income.map((e) => (
               <p
                 key={e.id}
-                className="rounded-lg border border-border bg-card px-4 py-3 text-sm"
+                className="rounded-lg border border-border bg-card px-4 py-3 text-xs md:text-sm"
               >
                 <span className="font-semibold">{e.customerName}</span> came{" "}
                 {rangeLabel === "Today" ? "today" : "in"} to do{" "}
@@ -98,11 +101,11 @@ export function ReportView({
       </div>
 
       <div>
-        <h2 className="mb-2.5 font-display text-base font-semibold">
+        <h2 className="mb-2.5 font-display text-sm md:text-base font-semibold">
           Money spent
         </h2>
         {expenses.length === 0 ? (
-          <p className="text-sm text-muted-foreground">
+          <p className="text-xs md:text-sm text-muted-foreground">
             No expenses in this period.
           </p>
         ) : (
@@ -110,7 +113,7 @@ export function ReportView({
             {expenses.map((e) => (
               <p
                 key={e.id}
-                className="rounded-lg border border-border bg-card px-4 py-3 text-sm"
+                className="rounded-lg border border-border bg-card px-4 py-3 text-xs md:text-sm"
               >
                 I spent{" "}
                 <span className="font-semibold text-expense">

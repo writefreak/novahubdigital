@@ -46,7 +46,7 @@ export default function ReportsPage() {
             key={opt.value}
             onClick={() => setRange(opt.value)}
             className={
-              "rounded-full border px-4 py-2 text-sm font-semibold transition-colors " +
+              "rounded-full border px-4 py-2 text-xs md:text-sm font-semibold transition-colors " +
               (range === opt.value
                 ? "border-accent bg-accent text-accent-foreground"
                 : "border-border bg-card text-muted-foreground hover:bg-muted")
