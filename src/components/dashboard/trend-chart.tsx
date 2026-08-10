@@ -49,8 +49,8 @@ export function TrendChart() {
   });
 
   return (
-    <Card className="rounded-2xl border-border bg-card shadow-sm">
-      <CardHeader className="flex flex-col md:flex-row md:items-center justify-between space-y-0 pb-2">
+    <Card className="rounded-2xl border-border bg-card shadow-sm w-full overflow-hidden">
+      <CardHeader className="flex flex-col sm:flex-row sm:items-center justify-between space-y-0 pb-2 p-4 sm:p-6">
         <div>
           <CardTitle className="font-display text-sm md:text-base font-semibold">
             This week
@@ -59,20 +59,28 @@ export function TrendChart() {
             Sales vs. expenses, last 7 days
           </CardDescription>
         </div>
-        <div className="flex items-center gap-3 font-semibold uppercase md:pt-0 pt-3 text-muted-foreground">
+        <div className="flex items-center gap-3 font-semibold uppercase pt-2 sm:pt-0 text-muted-foreground">
           <span className="flex text-xs md:text-sm items-center gap-1.5">
-            <span className="h-2 w-2 rounded-full bg-income" />
+            <span className="h-2 w-2 rounded-full bg-income shrink-0" />
             Sales
           </span>
           <span className="flex text-xs md:text-sm items-center gap-1.5">
-            <span className="h-2 w-2 rounded-full bg-expense" />
+            <span className="h-2 w-2 rounded-full bg-expense shrink-0" />
             Expenses
           </span>
         </div>
       </CardHeader>
-      <CardContent className="h-60 pt-2">
-        <ChartContainer config={chartConfig} className="h-full w-full">
-          <BarChart data={data} barGap={4} barCategoryGap="28%">
+      <CardContent className="h-60 px-2 pb-4 pt-2 sm:px-6">
+        <ChartContainer
+          config={chartConfig}
+          className="h-full w-full aspect-auto"
+        >
+          <BarChart
+            data={data}
+            barGap={2}
+            barCategoryGap="15%"
+            margin={{ top: 10, right: 8, left: 8, bottom: 0 }}
+          >
             <defs>
               <linearGradient id="incomeFill" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="0%" stopColor="var(--income)" stopOpacity={1} />
@@ -100,8 +108,8 @@ export function TrendChart() {
               dataKey="label"
               tickLine={false}
               axisLine={false}
-              tickMargin={10}
-              tick={{ fontSize: 12, fill: "var(--muted-foreground)" }}
+              tickMargin={8}
+              tick={{ fontSize: 11, fill: "var(--muted-foreground)" }}
             />
             <ChartTooltip
               cursor={{ fill: "var(--muted)", radius: 6 }}
@@ -112,14 +120,14 @@ export function TrendChart() {
             <Bar
               dataKey="income"
               fill="url(#incomeFill)"
-              radius={[6, 6, 0, 0]}
-              maxBarSize={22}
+              radius={[4, 4, 0, 0]}
+              maxBarSize={18}
             />
             <Bar
               dataKey="expense"
               fill="url(#expenseFill)"
-              radius={[6, 6, 0, 0]}
-              maxBarSize={22}
+              radius={[4, 4, 0, 0]}
+              maxBarSize={18}
             />
           </BarChart>
         </ChartContainer>
