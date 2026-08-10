@@ -48,7 +48,7 @@ export function TrendChart() {
   const maxVal = Math.max(...data.flatMap((d) => [d.income, d.expense]), 1);
 
   return (
-    <Card className="rounded-2xl border-border bg-card shadow-sm w-full min-w-0 overflow-hidden">
+    <Card className="rounded-2xl border-border bg-card shadow-sm md:w-full max-w-sm md:max-w-full overflow-hidden">
       <CardHeader className="flex flex-col sm:flex-row sm:items-center justify-between space-y-0 pb-2 p-4 sm:p-6">
         <div>
           <CardTitle className="font-display text-sm md:text-base font-semibold">
@@ -70,9 +70,9 @@ export function TrendChart() {
         </div>
       </CardHeader>
 
-      <CardContent className="p-4 sm:px-6 sm:pb-4 sm:pt-2">
+      <CardContent className="p-4 sm:px-6 sm:pb-4 sm:pt-2 ">
         {/* MOBILE VIEW (< sm): Horizontal comparative breakdown */}
-        <div className="flex flex-col gap-3 sm:hidden w-full">
+        <div className="flex flex-col gap-3 sm:hidden max-w-sm">
           {data.map((day, idx) => {
             const incomePct = Math.min(
               100,
@@ -86,18 +86,24 @@ export function TrendChart() {
             return (
               <div
                 key={idx}
-                className="flex flex-col gap-1 border-b border-border/40 pb-2 last:border-b-0 last:pb-0"
+                className="flex flex-col gap-1 border-b border-border/40 pb-2 last:border-b-0 last:pb-0 min-w-0 w-full"
               >
-                <div className="flex items-center justify-between text-xs font-semibold">
-                  <span className="text-muted-foreground w-10">
+                <div className="flex items-center justify-between gap-2 text-xs font-semibold min-w-0 w-full">
+                  <span className="text-muted-foreground w-10 shrink-0">
                     {day.label}
                   </span>
-                  <div className="flex items-center gap-3 text-[11px]">
-                    <span className="text-income font-medium">
+                  <div className="flex flex-1 min-w-0 items-center justify-end gap-1.5 text-[11px]">
+                    <span
+                      className="text-income font-medium truncate min-w-0 max-w-[45%]"
+                      title={formatNaira(day.income)}
+                    >
                       {formatNaira(day.income)}
                     </span>
-                    <span className="text-muted-foreground/40">|</span>
-                    <span className="text-expense font-medium">
+                    <span className="text-muted-foreground/40 shrink-0">|</span>
+                    <span
+                      className="text-expense font-medium truncate min-w-0 max-w-[45%]"
+                      title={formatNaira(day.expense)}
+                    >
                       {formatNaira(day.expense)}
                     </span>
                   </div>

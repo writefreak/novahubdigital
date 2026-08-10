@@ -20,7 +20,7 @@ export default function DashboardPage() {
   const recent = todayEntries.slice(0, 5);
 
   return (
-    <div className="flex flex-col gap-6 bg-white">
+    <div className="flex flex-col gap-6 bg-white overflow-x-hidden">
       {/* <div className="rounded-b-2xl pb-6 pt-1 lg:mx-0 lg:rounded-2xl lg:px-6 lg:py-6">
         <h1 className="font-display text-2xl font-bold tracking-tight lg:text-3xl">
           Hello, Welcome Back 👋
@@ -58,7 +58,10 @@ export default function DashboardPage() {
         />
       </div>
 
-      <TrendChart />
+      {/* Constrain chart container boundary to stop mobile horizontal spillover */}
+      <div className="max-w-sm md:max-w-full overflow-hidden">
+        <TrendChart />
+      </div>
 
       <div>
         <div className="mb-3 flex items-center justify-between">

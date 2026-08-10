@@ -103,7 +103,7 @@ export function StatCard({
         </div>
         <p
           className={cn(
-            "font-display mt-3 text-[1.75rem] font-bold tracking-tight tabular-nums lg:text-3xl",
+            "font-display mt-3 text-xl font-bold tracking-tight tabular-nums lg:text-3xl",
             emphasis ? "text-white" : "text-foreground",
             !emphasis && "pl-2",
           )}
