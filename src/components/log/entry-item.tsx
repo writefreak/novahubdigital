@@ -70,13 +70,13 @@ export function EntryItem({
           </div>
 
           {/* Note Section (If present) */}
-          {entry.note && (
+          {/* {entry.note && (
             <div className="bg-muted/40 rounded-md p-2 min-w-0">
               <p className="text-[11px] text-muted-foreground truncate">
                 {entry.note}
               </p>
             </div>
-          )}
+          )} */}
 
           {/* Bottom Highlight Row: Amount Badge */}
           <div className="flex items-center justify-between pt-1 border-t border-border/30">
