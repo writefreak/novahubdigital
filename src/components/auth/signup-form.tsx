@@ -56,13 +56,17 @@ export function SignUpForm() {
 
     if (!signUp) return;
 
-    const { error } = await signUp.password({
+    // In SignUpFutureResource, signUp.password returns { error }
+    const res = await signUp.password({
       emailAddress: email,
       password,
     });
 
-    if (error) {
-      const msg = error.longMessage ?? "Failed to create account.";
+    if (res?.error) {
+      const msg =
+        res.error.longMessage ??
+        res.error.message ??
+        "Failed to create account.";
       setFormError(msg);
       showToast("error", msg);
       return;
@@ -74,16 +78,16 @@ export function SignUpForm() {
       return;
     }
 
-    const { error: codeError } = await signUp.verifications.sendEmailCode();
+    // Prepare email verification via verifications.sendEmailCode for SignUpFutureResource
+    const codeRes = await signUp.verifications.sendEmailCode();
 
-    if (codeError) {
-      setFormError(
-        codeError.longMessage ?? "Failed to send verification code.",
-      );
-      showToast(
-        "error",
-        codeError.longMessage ?? "Failed to send verification code.",
-      );
+    if (codeRes?.error) {
+      const msg =
+        codeRes.error.longMessage ??
+        codeRes.error.message ??
+        "Failed to send verification code.";
+      setFormError(msg);
+      showToast("error", msg);
       return;
     }
 
@@ -91,42 +95,19 @@ export function SignUpForm() {
     showToast("success", "Verification code sent to your email.");
   }
 
-  // async function handleVerify(e: React.FormEvent) {
-  //   e.preventDefault();
-  //   setFormError(null);
-
-  //   if (!signUp) return;
-
-  //   const { error } = await signUp.verifications.verifyEmailCode({ code });
-
-  //   if (error) {
-  //     const msg = error.longMessage ?? "Invalid verification code.";
-  //     setFormError(msg);
-  //     showToast("error", msg);
-  //     return;
-  //   }
-
-  //   try {
-  //     showToast("success", "Account verified successfully!");
-  //     await finalizeSignUp();
-  //   } catch (finalizeErr: any) {
-  //     const msg = finalizeErr?.message ?? "Error finalizing registration.";
-  //     setFormError(msg);
-  //     showToast("error", msg);
-  //   }
-  // }
-
   async function handleVerify(e: React.FormEvent) {
     e.preventDefault();
     setFormError(null);
 
     if (!signUp) return;
 
-    const { error } = await signUp.verifications.verifyEmailCode({ code });
+    const res = await signUp.verifications.verifyEmailCode({ code });
 
-    if (error) {
+    if (res?.error) {
       const msg =
-        error.longMessage ?? error.message ?? "Invalid verification code.";
+        res.error.longMessage ??
+        res.error.message ??
+        "Invalid verification code.";
       setFormError(msg);
       showToast("error", msg);
       return;
@@ -147,16 +128,18 @@ export function SignUpForm() {
       );
     }
   }
+
   async function handleResendCode() {
     if (!signUp) return;
     setFormError(null);
     setIsResending(true);
 
-    const { error } = await signUp.verifications.sendEmailCode();
+    const res = await signUp.verifications.sendEmailCode();
     setIsResending(false);
 
-    if (error) {
-      const msg = error.longMessage ?? "Failed to resend code.";
+    if (res?.error) {
+      const msg =
+        res.error.longMessage ?? res.error.message ?? "Failed to resend code.";
       setFormError(msg);
       showToast("error", msg);
       return;
