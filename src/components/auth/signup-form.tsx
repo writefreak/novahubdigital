@@ -50,13 +50,78 @@ export function SignUpForm() {
     });
   }
 
+  // async function handleSignUp(e: React.FormEvent) {
+  //   e.preventDefault();
+  //   setFormError(null);
+
+  //   if (!signUp) return;
+
+  //   // In SignUpFutureResource, signUp.password returns { error }
+  //   const res = await signUp.password({
+  //     emailAddress: email,
+  //     password,
+  //   });
+
+  //   if (res?.error) {
+  //     const msg =
+  //       res.error.longMessage ??
+  //       res.error.message ??
+  //       "Failed to create account.";
+  //     setFormError(msg);
+  //     showToast("error", msg);
+  //     return;
+  //   }
+
+  //   if (signUp.status === "complete") {
+  //     showToast("success", "Account created successfully!");
+  //     await finalizeSignUp();
+  //     return;
+  //   }
+
+  //   // Prepare email verification via verifications.sendEmailCode for SignUpFutureResource
+  //   const codeRes = await signUp.verifications.sendEmailCode();
+
+  //   if (codeRes?.error) {
+  //     const msg =
+  //       codeRes.error.longMessage ??
+  //       codeRes.error.message ??
+  //       "Failed to send verification code.";
+  //     setFormError(msg);
+  //     showToast("error", msg);
+  //     return;
+  //   }
+
+  //   setPendingVerification(true);
+  //   showToast("success", "Verification code sent to your email.");
+  // }
+
   async function handleSignUp(e: React.FormEvent) {
     e.preventDefault();
     setFormError(null);
 
     if (!signUp) return;
 
-    // In SignUpFutureResource, signUp.password returns { error }
+    // 1. If an abandoned attempt exists for this email, jump straight to verification
+    if (
+      signUp.status === "missing_requirements" &&
+      signUp.emailAddress === email
+    ) {
+      const codeRes = await signUp.verifications.sendEmailCode();
+      if (codeRes?.error) {
+        const msg =
+          codeRes.error.longMessage ??
+          codeRes.error.message ??
+          "Failed to send code.";
+        setFormError(msg);
+        showToast("error", msg);
+        return;
+      }
+      setPendingVerification(true);
+      showToast("success", "Resent code for your pending verification.");
+      return;
+    }
+
+    // 2. Normal fresh registration flow
     const res = await signUp.password({
       emailAddress: email,
       password,
@@ -72,13 +137,15 @@ export function SignUpForm() {
       return;
     }
 
-    if (signUp.status === "complete") {
+    // 3. Check status after the password attempt
+    const currentStatus = signUp.status as string;
+
+    if (currentStatus === "complete") {
       showToast("success", "Account created successfully!");
       await finalizeSignUp();
       return;
     }
 
-    // Prepare email verification via verifications.sendEmailCode for SignUpFutureResource
     const codeRes = await signUp.verifications.sendEmailCode();
 
     if (codeRes?.error) {
