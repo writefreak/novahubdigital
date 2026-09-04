@@ -1,27 +1,37 @@
-import { type ClassValue, clsx } from "clsx";
+export { cn } from "cn";
+import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 
-export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs));
-}
+/**
+ * Formats a number as Nigerian Naira currency (₦).
+ * Handles string or number inputs safely.
+ *
+ * Examples:
+ * formatNaira(2500) -> "₦2,500"
+ * formatNaira(0)    -> "₦0"
+ */
+export function formatNaira(
+  amount: number | string | undefined | null,
+): string {
+  const num = Number(amount);
+  if (isNaN(num)) return "₦0";
 
-export function formatNaira(amount: number) {
   return new Intl.NumberFormat("en-NG", {
     style: "currency",
     currency: "NGN",
+    minimumFractionDigits: 0,
     maximumFractionDigits: 0,
-  }).format(amount);
+  }).format(num);
 }
 
-export function formatDay(dateStr: string) {
-  const d = new Date(dateStr);
-  return new Intl.DateTimeFormat("en-NG", {
-    weekday: "short",
-    day: "numeric",
-    month: "short",
-  }).format(d);
-}
+/**
+ * Returns today's date formatted as `yyyy-mm-dd` using local time.
+ */
+export function todayStr(): string {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, "0");
+  const day = String(now.getDate()).padStart(2, "0");
 
-export function todayStr() {
-  return new Date().toISOString().slice(0, 10);
+  return `${year}-${month}-${day}`;
 }

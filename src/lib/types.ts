@@ -6,6 +6,8 @@ export type Service = {
 
 export type EntryType = "income" | "expense";
 
+export type PaymentStatus = "paid" | "part" | "unpaid";
+
 export type Entry = {
   id: string;
   type: EntryType;
@@ -13,11 +15,17 @@ export type Entry = {
   amount: number;
   // income-only fields
   customerName?: string;
-  serviceId?: string;
-  serviceName?: string; // denormalized copy of the service name at time of sale
+  serviceId?: string; // legacy support
+  serviceName?: string; // legacy support
+  serviceIds?: string[];
+  serviceNames?: string[];
+  description?: string;
   // expense-only fields
   item?: string;
   note?: string;
+  // shared payment tracking fields
+  paymentStatus?: PaymentStatus;
+  amountPaid?: number;
   createdAt: string; // ISO timestamp
 };
 
@@ -44,7 +52,12 @@ export type EntryRow = {
   customer_name: string | null;
   service_id: string | null;
   service_name: string | null;
+  service_ids: string[] | null;
+  service_names: string[] | null;
+  description: string | null;
   item: string | null;
   note: string | null;
+  payment_status: PaymentStatus | null;
+  amount_paid: number | null;
   created_at: string;
 };
