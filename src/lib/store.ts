@@ -9,7 +9,11 @@ import {
   updateServiceAction,
   deleteServiceAction,
 } from "./supabase/services";
-import { createEntryAction, deleteEntryAction } from "./supabase/entries";
+import {
+  createEntryAction,
+  deleteEntryAction,
+  updateEntryAction,
+} from "./supabase/entries";
 import { getBusinessDataAction } from "./actions/data";
 
 type Store = {
@@ -21,6 +25,10 @@ type Store = {
   updateService: (id: string, s: Omit<Service, "id">) => Promise<void>;
   removeService: (id: string) => Promise<void>;
   addEntry: (e: Omit<Entry, "id" | "createdAt">) => Promise<void>;
+  updateEntry: (
+    id: string,
+    e: Partial<Omit<Entry, "id" | "createdAt">>,
+  ) => Promise<void>; // Add this
   removeEntry: (id: string) => Promise<void>;
 };
 
@@ -57,6 +65,15 @@ export const useStore = create<Store>()((set, get) => ({
   addEntry: async (e) => {
     const created = await createEntryAction(e);
     set((state) => ({ entries: [created, ...state.entries] }));
+  },
+
+  updateEntry: async (id, e) => {
+    const updated = await updateEntryAction(id, e);
+    set((state) => ({
+      entries: state.entries.map((entry) =>
+        entry.id === id ? updated : entry,
+      ),
+    }));
   },
 
   removeEntry: async (id) => {

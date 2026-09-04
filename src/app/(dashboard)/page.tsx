@@ -1,15 +1,22 @@
 "use client";
 
+import * as React from "react";
 import { TrendingUp, TrendingDown, Scale } from "lucide-react";
 import { StatCard } from "@/components/dashboard/stat-card";
 import { TrendChart } from "@/components/dashboard/trend-chart";
 import { EntryItem } from "@/components/log/entry-item";
+import { EntryForm } from "@/components/log/entry-form";
 import { useTodayEntries, useInitStore } from "@/lib/store";
+import type { Entry } from "@/lib/types";
 import Link from "next/link";
 
 export default function DashboardPage() {
   useInitStore();
   const todayEntries = useTodayEntries();
+
+  const [editingEntry, setEditingEntry] = React.useState<Entry | null>(null);
+  const [formOpen, setFormOpen] = React.useState(false);
+
   const income = todayEntries
     .filter((e) => e.type === "income")
     .reduce((s, e) => s + e.amount, 0);
@@ -19,17 +26,13 @@ export default function DashboardPage() {
   const net = income - expense;
   const recent = todayEntries.slice(0, 5);
 
+  function handleEdit(entry: Entry) {
+    setEditingEntry(entry);
+    setFormOpen(true);
+  }
+
   return (
     <div className="flex flex-col gap-6 bg-white overflow-x-hidden">
-      {/* <div className="rounded-b-2xl pb-6 pt-1 lg:mx-0 lg:rounded-2xl lg:px-6 lg:py-6">
-        <h1 className="font-display text-2xl font-bold tracking-tight lg:text-3xl">
-          Hello, Welcome Back 👋
-        </h1>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Here&apos;s an overview of how NovaHub Digital Center is doing today.
-        </p>
-      </div> */}
-
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4">
         <StatCard
           label="Today's sales"
@@ -58,7 +61,6 @@ export default function DashboardPage() {
         />
       </div>
 
-      {/* Constrain chart container boundary to stop mobile horizontal spillover */}
       <div className="max-w-sm md:max-w-full overflow-hidden">
         <TrendChart />
       </div>
@@ -82,11 +84,25 @@ export default function DashboardPage() {
         ) : (
           <div className="flex flex-col gap-2.5">
             {recent.map((entry, i) => (
-              <EntryItem key={entry.id} entry={entry} index={i} />
+              <EntryItem
+                key={entry.id}
+                entry={entry}
+                index={i}
+                onEdit={handleEdit}
+              />
             ))}
           </div>
         )}
       </div>
+
+      <EntryForm
+        open={formOpen}
+        onOpenChange={(open) => {
+          setFormOpen(open);
+          if (!open) setEditingEntry(null);
+        }}
+        initialEntry={editingEntry}
+      />
     </div>
   );
 }

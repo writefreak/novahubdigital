@@ -24,17 +24,22 @@ import {
 import { CheckIcon } from "lucide-react";
 import { useStore } from "@/lib/store";
 import { todayStr, formatNaira } from "@/lib/utils";
-import type { EntryType, PaymentStatus } from "@/lib/types";
+import type { Entry, EntryType, PaymentStatus } from "@/lib/types";
 
 export function EntryForm({
   open,
   onOpenChange,
+  initialEntry = null,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  initialEntry?: Entry | null;
 }) {
-  const services = useStore((s) => s.services);
+  const services = useStore((s) => s.services || []);
   const addEntry = useStore((s) => s.addEntry);
+  const updateEntry = useStore((s) => s.updateEntry);
+
+  const isEditing = Boolean(initialEntry);
 
   const [type, setType] = React.useState<EntryType>("income");
   const [customerName, setCustomerName] = React.useState("");
@@ -55,6 +60,29 @@ export function EntryForm({
 
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
+
+  // Populate form state when editing or reset when opening fresh
+  React.useEffect(() => {
+    if (initialEntry) {
+      setType(initialEntry.type);
+      if (initialEntry.type === "income") {
+        setCustomerName(initialEntry.customerName || "");
+        setSelectedServiceIds(initialEntry.serviceIds || []);
+        setAmount(String(initialEntry.amount || ""));
+        setAmountPaid(String(initialEntry.amountPaid || ""));
+        setPaymentStatus(initialEntry.paymentStatus || "paid");
+        setDescription(initialEntry.description || "");
+      } else {
+        setItem(initialEntry.item || "");
+        setAmount(String(initialEntry.amount || ""));
+        setExpenseAmountPaid(String(initialEntry.amountPaid || ""));
+        setExpensePaymentStatus(initialEntry.paymentStatus || "paid");
+        setNote(initialEntry.note || initialEntry.description || "");
+      }
+    } else {
+      reset();
+    }
+  }, [initialEntry, open]);
 
   function reset() {
     setCustomerName("");
@@ -99,9 +127,9 @@ export function EntryForm({
           selectedServiceIds.includes(s.id),
         );
 
-        await addEntry({
-          type: "income",
-          date: todayStr(),
+        const payload = {
+          type: "income" as const,
+          date: initialEntry?.date || todayStr(),
           amount: numAmount,
           customerName: customerName.trim(),
           serviceIds: selectedServiceIds,
@@ -114,15 +142,23 @@ export function EntryForm({
               : paymentStatus === "paid"
                 ? numAmount
                 : 0,
-        });
+        };
+
+        if (isEditing && initialEntry) {
+          await updateEntry(initialEntry.id, payload);
+        } else {
+          await addEntry(payload);
+        }
       } else {
         if (!item.trim()) return;
-        await addEntry({
-          type: "expense",
-          date: todayStr(),
+
+        const payload = {
+          type: "expense" as const,
+          date: initialEntry?.date || todayStr(),
           amount: numAmount,
           item: item.trim(),
           note: note.trim() || undefined,
+          description: note.trim() || undefined,
           paymentStatus: expensePaymentStatus,
           amountPaid:
             expensePaymentStatus === "part"
@@ -130,14 +166,18 @@ export function EntryForm({
               : expensePaymentStatus === "paid"
                 ? numAmount
                 : 0,
-        });
+        };
+
+        if (isEditing && initialEntry) {
+          await updateEntry(initialEntry.id, payload);
+        } else {
+          await addEntry(payload);
+        }
       }
       reset();
       onOpenChange(false);
     } catch (err) {
-      setError(
-        err instanceof Error ? err.message : "Couldn't save. Try again.",
-      );
+      setError(err instanceof Error ? err.message : "Failed to save entry.");
     } finally {
       setIsSubmitting(false);
     }
@@ -150,21 +190,24 @@ export function EntryForm({
         className="!w-screen !max-w-full sm:!w-[500px] sm:!max-w-[500px] bg-white text-slate-900 flex flex-col h-full p-0 border-l border-slate-200"
       >
         <SheetHeader className="p-6 pb-4 border-b border-slate-100 bg-white">
-          <SheetTitle>Log an entry</SheetTitle>
+          <SheetTitle>{isEditing ? "Edit entry" : "Log an entry"}</SheetTitle>
           <SheetDescription>
-            Record a customer sale or a business expense for today.
+            {isEditing
+              ? "Update details or status for this transaction."
+              : "Record a customer sale or a business expense for today."}
           </SheetDescription>
         </SheetHeader>
 
-        {/* Scrollable Body */}
         <div className="flex-1 overflow-y-auto p-6 bg-white">
           <Tabs value={type} onValueChange={(v) => setType(v as EntryType)}>
-            <TabsList className="w-full grid grid-cols-2 bg-slate-100 p-1 rounded-lg">
-              <TabsTrigger value="income">Customer sale</TabsTrigger>
-              <TabsTrigger value="expense">Expense</TabsTrigger>
-            </TabsList>
+            {!isEditing && (
+              <TabsList className="w-full grid grid-cols-2 bg-slate-100 p-1 rounded-lg">
+                <TabsTrigger value="income">Customer sale</TabsTrigger>
+                <TabsTrigger value="expense">Expense</TabsTrigger>
+              </TabsList>
+            )}
 
-            <form id="entry-form" onSubmit={handleSubmit} className="mt-6">
+            <form id="entry-form" onSubmit={handleSubmit} className="mt-4">
               <TabsContent value="income" className="mt-0 flex flex-col gap-5">
                 <div className="flex flex-col gap-1.5">
                   <Label
@@ -196,20 +239,20 @@ export function EntryForm({
                           onClick={() => handleServiceToggle(s.id)}
                           className={`flex items-center justify-between p-3 rounded-lg border text-left transition-all active:scale-[0.98] ${
                             isSelected
-                              ? "border-[#ff5a1f] bg-[#ff5a1f]/10 ring-1 ring-[#ff5a1f] text-[#ff5a1f]"
-                              : "border-slate-200 bg-slate-50/50 text-[#ff5a1f] hover:border-slate-300 hover:bg-slate-100/60"
+                              ? "border-[#ff5a1f] bg-[#ff5a1f]/20 ring-1 ring-[#ff5a1f] text-[#ff5a1f]"
+                              : "border-slate-200 bg-slate-50/50 text-slate-600 hover:border-slate-300 hover:bg-slate-100/60"
                           }`}
                         >
                           <div className="flex items-center gap-2.5 min-w-0 pr-2">
                             <div
                               className={`flex h-4 w-4 shrink-0 items-center justify-center rounded border transition-colors ${
                                 isSelected
-                                  ? "border-[#ff5a1f] bg-[#ff5a1f]/10 text-white"
+                                  ? "border-[#ff5a1f] bg-[#ff5a1f] text-white"
                                   : "border-slate-300 bg-white"
                               }`}
                             >
                               {isSelected && (
-                                <CheckIcon className="h-3 w-3 stroke-3" />
+                                <CheckIcon className="h-3 w-3 stroke-[3]" />
                               )}
                             </div>
                             <span className="text-xs font-medium truncate text-slate-800">
@@ -409,7 +452,6 @@ export function EntryForm({
           </Tabs>
         </div>
 
-        {/* Pure White Footer */}
         <SheetFooter className="p-4 border-t border-slate-100 bg-white shrink-0">
           <Button
             type="submit"
@@ -420,9 +462,11 @@ export function EntryForm({
           >
             {isSubmitting
               ? "Saving…"
-              : type === "income"
-                ? "Save sale"
-                : "Save expense"}
+              : isEditing
+                ? "Update Entry"
+                : type === "income"
+                  ? "Save Sale"
+                  : "Save Expense"}
           </Button>
         </SheetFooter>
       </SheetContent>

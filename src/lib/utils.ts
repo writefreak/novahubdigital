@@ -35,3 +35,29 @@ export function todayStr(): string {
 
   return `${year}-${month}-${day}`;
 }
+
+export function formatDay(
+  dateInput: string | Date | undefined | null,
+  options: { includeYear?: boolean; long?: boolean } = {},
+): string {
+  if (!dateInput) return "";
+
+  // Parse YYYY-MM-DD manually to avoid UTC timezone shifts
+  let date: Date;
+  if (typeof dateInput === "string" && dateInput.includes("-")) {
+    const [year, month, day] = dateInput.split("-").map(Number);
+    date = new Date(year, month - 1, day);
+  } else {
+    date = new Date(dateInput);
+  }
+
+  if (isNaN(date.getTime())) return "";
+
+  const { includeYear = true, long = false } = options;
+
+  return date.toLocaleDateString("en-NG", {
+    month: long ? "long" : "short",
+    day: "numeric",
+    year: includeYear ? "numeric" : undefined,
+  });
+}

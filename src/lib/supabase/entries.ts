@@ -53,3 +53,38 @@ export async function deleteEntryAction(id: string): Promise<void> {
   revalidatePath("/log");
   revalidatePath("/reports");
 }
+
+export async function updateEntryAction(
+  id: string,
+  input: Partial<EntryInput>,
+): Promise<Entry> {
+  const { supabase, businessId, role } = await requireMembership();
+
+  // Enforce role restrictions if necessary, matching your delete rule
+  requireRole(role, ["owner", "full"]);
+
+  const { data, error } = await supabase
+    .from("entries")
+    .update({
+      type: input.type,
+      date: input.date,
+      amount: input.amount,
+      customer_name: input.customerName ?? null,
+      service_id: input.serviceId ?? null,
+      service_name: input.serviceName ?? null,
+      item: input.item ?? null,
+      note: input.note ?? null,
+    })
+    .eq("id", id)
+    .eq("business_id", businessId)
+    .select()
+    .single();
+
+  if (error) throw new Error(error.message);
+
+  revalidatePath("/");
+  revalidatePath("/log");
+  revalidatePath("/reports");
+
+  return toEntry(data);
+}
