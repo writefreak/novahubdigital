@@ -13,6 +13,20 @@ export async function createEntryAction(input: EntryInput): Promise<Entry> {
 
   const { data, error } = await supabase
     .from("entries")
+    // .insert({
+    //   business_id: businessId,
+    //   created_by: userId,
+    //   type: input.type,
+    //   date: input.date,
+    //   amount: input.amount,
+    //   customer_name: input.customerName ?? null,
+    //   service_id: input.serviceId ?? null,
+    //   service_name: input.serviceName ?? null,
+    //   item: input.item ?? null,
+    //   note: input.note ?? null,
+    //   // description: input.description ?? null,
+    // })
+
     .insert({
       business_id: businessId,
       created_by: userId,
@@ -22,9 +36,13 @@ export async function createEntryAction(input: EntryInput): Promise<Entry> {
       customer_name: input.customerName ?? null,
       service_id: input.serviceId ?? null,
       service_name: input.serviceName ?? null,
+      service_ids: input.serviceIds ?? null,
+      service_names: input.serviceNames ?? null,
+      description: input.description ?? null,
       item: input.item ?? null,
       note: input.note ?? null,
-      // description: input.description ?? null,
+      payment_status: input.paymentStatus ?? null,
+      amount_paid: input.amountPaid ?? null,
     })
     .select()
     .single();
@@ -66,6 +84,17 @@ export async function updateEntryAction(
 
   const { data, error } = await supabase
     .from("entries")
+    // .update({
+    //   type: input.type,
+    //   date: input.date,
+    //   amount: input.amount,
+    //   customer_name: input.customerName ?? null,
+    //   service_id: input.serviceId ?? null,
+    //   service_name: input.serviceName ?? null,
+    //   item: input.item ?? null,
+    //   note: input.note ?? null,
+    //   // description: input.description ?? null,
+    // })
     .update({
       type: input.type,
       date: input.date,
@@ -73,9 +102,13 @@ export async function updateEntryAction(
       customer_name: input.customerName ?? null,
       service_id: input.serviceId ?? null,
       service_name: input.serviceName ?? null,
+      service_ids: input.serviceIds ?? null,
+      service_names: input.serviceNames ?? null,
+      description: input.description ?? null,
       item: input.item ?? null,
       note: input.note ?? null,
-      // description: input.description ?? null,
+      payment_status: input.paymentStatus ?? null,
+      amount_paid: input.amountPaid ?? null,
     })
     .eq("id", id)
     .eq("business_id", businessId)

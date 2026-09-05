@@ -61,12 +61,70 @@ export function EntryForm({
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
 
+  // React.useEffect(() => {
+  //   if (initialEntry) {
+  //     setType(initialEntry.type);
+  //     if (initialEntry.type === "income") {
+  //       setCustomerName(initialEntry.customerName || "");
+  //       setSelectedServiceIds(initialEntry.serviceIds || []);
+  //       setAmount(
+  //         initialEntry.amount !== undefined ? String(initialEntry.amount) : "",
+  //       );
+  //       setAmountPaid(
+  //         initialEntry.amountPaid !== undefined
+  //           ? String(initialEntry.amountPaid)
+  //           : "",
+  //       );
+  //       setPaymentStatus(initialEntry.paymentStatus || "paid");
+  //       setDescription(initialEntry.note || initialEntry.description || "");
+  //     } else {
+  //       setItem(initialEntry.item || "");
+  //       setAmount(
+  //         initialEntry.amount !== undefined ? String(initialEntry.amount) : "",
+  //       );
+  //       setExpenseAmountPaid(
+  //         initialEntry.amountPaid !== undefined
+  //           ? String(initialEntry.amountPaid)
+  //           : "",
+  //       );
+  //       setExpensePaymentStatus(initialEntry.paymentStatus || "paid");
+  //       setNote(initialEntry.note || initialEntry.description || "");
+  //     }
+  //   } else {
+  //     reset();
+  //   }
+  // }, [initialEntry, open]);
+
+  // ✅ CORRECT: Pass the array reference directly
   React.useEffect(() => {
     if (initialEntry) {
       setType(initialEntry.type);
       if (initialEntry.type === "income") {
         setCustomerName(initialEntry.customerName || "");
-        setSelectedServiceIds(initialEntry.serviceIds || []);
+
+        const rawServiceIds =
+          initialEntry.serviceIds || (initialEntry as any).service_ids || [];
+
+        const normalizedIds = Array.isArray(rawServiceIds)
+          ? rawServiceIds.map((id: any) => String(id))
+          : [];
+
+        if (
+          normalizedIds.length === 0 &&
+          (initialEntry.serviceNames || (initialEntry as any).service_names)
+        ) {
+          const names: string[] =
+            initialEntry.serviceNames ||
+            (initialEntry as any).service_names ||
+            [];
+          const matchedIds = services
+            .filter((s) => names.includes(s.name))
+            .map((s) => String(s.id));
+          setSelectedServiceIds(matchedIds);
+        } else {
+          setSelectedServiceIds(normalizedIds);
+        }
+
         setAmount(
           initialEntry.amount !== undefined ? String(initialEntry.amount) : "",
         );
@@ -93,8 +151,8 @@ export function EntryForm({
     } else {
       reset();
     }
-  }, [initialEntry, open]);
-
+    // 1-to-1 dependency list (no spread operators)
+  }, [initialEntry, open, services]);
   function reset() {
     setCustomerName("");
     setSelectedServiceIds([]);
