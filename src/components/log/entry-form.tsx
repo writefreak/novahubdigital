@@ -61,21 +61,32 @@ export function EntryForm({
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
 
-  // Populate form state when editing or reset when opening fresh
   React.useEffect(() => {
     if (initialEntry) {
       setType(initialEntry.type);
       if (initialEntry.type === "income") {
         setCustomerName(initialEntry.customerName || "");
         setSelectedServiceIds(initialEntry.serviceIds || []);
-        setAmount(String(initialEntry.amount || ""));
-        setAmountPaid(String(initialEntry.amountPaid || ""));
+        setAmount(
+          initialEntry.amount !== undefined ? String(initialEntry.amount) : "",
+        );
+        setAmountPaid(
+          initialEntry.amountPaid !== undefined
+            ? String(initialEntry.amountPaid)
+            : "",
+        );
         setPaymentStatus(initialEntry.paymentStatus || "paid");
-        setDescription(initialEntry.description || "");
+        setDescription(initialEntry.note || initialEntry.description || "");
       } else {
         setItem(initialEntry.item || "");
-        setAmount(String(initialEntry.amount || ""));
-        setExpenseAmountPaid(String(initialEntry.amountPaid || ""));
+        setAmount(
+          initialEntry.amount !== undefined ? String(initialEntry.amount) : "",
+        );
+        setExpenseAmountPaid(
+          initialEntry.amountPaid !== undefined
+            ? String(initialEntry.amountPaid)
+            : "",
+        );
         setExpensePaymentStatus(initialEntry.paymentStatus || "paid");
         setNote(initialEntry.note || initialEntry.description || "");
       }
@@ -115,14 +126,28 @@ export function EntryForm({
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    const numAmount = Number(amount);
-    if (!numAmount || numAmount <= 0) return;
-
     setError(null);
+
+    const numAmount = Number(amount);
+    if (!numAmount || numAmount <= 0) {
+      setError("Please enter a valid amount.");
+      return;
+    }
+
+    if (type === "income" && !customerName.trim()) {
+      setError("Please enter a customer name.");
+      return;
+    }
+
+    if (type === "expense" && !item.trim()) {
+      setError("Please specify what was spent on.");
+      return;
+    }
+
     setIsSubmitting(true);
+
     try {
       if (type === "income") {
-        if (!customerName.trim()) return;
         const selectedServices = services.filter((s) =>
           selectedServiceIds.includes(s.id),
         );
@@ -134,7 +159,7 @@ export function EntryForm({
           customerName: customerName.trim(),
           serviceIds: selectedServiceIds,
           serviceNames: selectedServices.map((s) => s.name),
-          description: description.trim() || undefined,
+          note: description.trim(),
           paymentStatus,
           amountPaid:
             paymentStatus === "part"
@@ -144,21 +169,18 @@ export function EntryForm({
                 : 0,
         };
 
-        if (isEditing && initialEntry) {
+        if (isEditing && initialEntry?.id) {
           await updateEntry(initialEntry.id, payload);
         } else {
           await addEntry(payload);
         }
       } else {
-        if (!item.trim()) return;
-
         const payload = {
           type: "expense" as const,
           date: initialEntry?.date || todayStr(),
           amount: numAmount,
           item: item.trim(),
-          note: note.trim() || undefined,
-          description: note.trim() || undefined,
+          note: note.trim(),
           paymentStatus: expensePaymentStatus,
           amountPaid:
             expensePaymentStatus === "part"
@@ -168,16 +190,21 @@ export function EntryForm({
                 : 0,
         };
 
-        if (isEditing && initialEntry) {
+        if (isEditing && initialEntry?.id) {
           await updateEntry(initialEntry.id, payload);
         } else {
           await addEntry(payload);
         }
       }
+
       reset();
       onOpenChange(false);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to save entry.");
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Failed to save entry. Check database columns.",
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -187,14 +214,16 @@ export function EntryForm({
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent
         side="right"
-        className="!w-screen !max-w-full sm:!w-[500px] sm:!max-w-[500px] bg-white text-slate-900 flex flex-col h-full p-0 border-l border-slate-200"
+        className="w-screen! max-w-full! sm:w-125! sm:max-w-125! bg-white text-slate-900 flex flex-col h-full p-0 border-l border-slate-200"
       >
         <SheetHeader className="p-6 pb-4 border-b border-slate-100 bg-white">
-          <SheetTitle>{isEditing ? "Edit entry" : "Log an entry"}</SheetTitle>
-          <SheetDescription>
+          <SheetTitle className="text-base md:text-lg">
+            {isEditing ? "Edit entry" : "Log an entry"}
+          </SheetTitle>
+          <SheetDescription className="text-sm md:text-base max-w-xs">
             {isEditing
               ? "Update details or status for this transaction."
-              : "Record a customer sale or a business expense for today."}
+              : "Record a customer sale or a business expense"}
           </SheetDescription>
         </SheetHeader>
 

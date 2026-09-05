@@ -34,6 +34,7 @@ export function EntryItem({
   const amountPaid =
     entry.amountPaid ?? (paymentStatus === "paid" ? entry.amount : 0);
   const balance = entry.amount - amountPaid;
+  const descriptionText = entry.description?.trim() || entry.note?.trim() || "";
 
   return (
     <>
@@ -50,10 +51,29 @@ export function EntryItem({
           {/* Mobile UI */}
           <div className="flex flex-col gap-2.5 sm:hidden">
             <div className="flex items-start justify-between gap-2">
-              <div className="flex items-center gap-2.5 min-w-0">
+              <div className="flex justify-between gap-2 min-w-0">
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-sm font-semibold text-slate-900">
+                    {isIncome ? entry.customerName : entry.item}
+                  </p>
+                  {/* {isIncome && (
+                    <p className="truncate text-xs font-medium text-slate-500">
+                      {entry.serviceNames?.join(", ") ||
+                        entry.serviceName ||
+                        "Service"}
+                    </p>
+                  )} */}
+                  <div className="pb-2">
+                    {descriptionText && (
+                      <p className="line-clamp-2 text-xs text-neutral-500 pt-3 font-normal">
+                        {descriptionText}
+                      </p>
+                    )}
+                  </div>
+                </div>
                 <div
                   className={cn(
-                    "flex h-8 w-8 shrink-0 items-center justify-center rounded-lg",
+                    "flex h-8 w-8 shrink-0 items-center justify-center rounded-lg mt-0.5",
                     isIncome
                       ? "bg-emerald-50 text-emerald-600"
                       : "bg-rose-50 text-rose-600",
@@ -65,22 +85,23 @@ export function EntryItem({
                     <Wallet className="h-4 w-4" />
                   )}
                 </div>
-                <div className="min-w-0">
-                  <p className="truncate text-xs font-semibold text-slate-900">
-                    {isIncome ? entry.customerName : entry.item}
-                  </p>
-                  {isIncome && (
-                    <p className="truncate text-[11px] text-slate-500">
-                      {entry.serviceNames?.join(", ") ||
-                        entry.serviceName ||
-                        "Service"}
-                    </p>
-                  )}
-                </div>
               </div>
+            </div>
 
+            <div className="flex items-center justify-between pt-1 border-t border-slate-100">
+              <Badge
+                className={cn(
+                  "text-xs px-2.5 py-0.5 font-semibold",
+                  isIncome
+                    ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                    : "bg-rose-50 text-rose-700 border-rose-200",
+                )}
+              >
+                {isIncome ? "+" : "-"}
+                {formatNaira(entry.amount)}
+              </Badge>
               <div
-                className="flex items-center gap-1 shrink-0"
+                className="flex items-center gap-1 shrink-0 pt-2"
                 onClick={(e) => e.stopPropagation()}
               >
                 {onEdit && (
@@ -104,13 +125,7 @@ export function EntryItem({
                   <Trash2 className="h-3.5 w-3.5" />
                 </Button>
               </div>
-            </div>
-
-            <div className="flex items-center justify-between pt-1 border-t border-slate-100">
-              <div className="flex items-center gap-2">
-                <span className="text-[10px] uppercase font-bold tracking-wider text-slate-400">
-                  {isIncome ? "Income" : "Expense"}
-                </span>
+              {/* <div className="flex items-center gap-2">
                 {paymentStatus !== "paid" && (
                   <span
                     className={cn(
@@ -123,18 +138,7 @@ export function EntryItem({
                     {paymentStatus === "part" ? "Partially Paid" : "Unpaid"}
                   </span>
                 )}
-              </div>
-              <Badge
-                className={cn(
-                  "text-xs px-2.5 py-0.5 font-semibold",
-                  isIncome
-                    ? "bg-emerald-50 text-emerald-700 border-emerald-200"
-                    : "bg-rose-50 text-rose-700 border-rose-200",
-                )}
-              >
-                {isIncome ? "+" : "-"}
-                {formatNaira(entry.amount)}
-              </Badge>
+              </div> */}
             </div>
           </div>
 
@@ -142,7 +146,7 @@ export function EntryItem({
           <div className="hidden sm:flex sm:flex-row sm:items-center sm:gap-3 min-w-0">
             <div
               className={cn(
-                "flex h-10 w-10 shrink-0 items-center justify-center rounded-full",
+                "flex h-10 w-10 shrink-0 items-center justify-center rounded-full self-start mt-0.5",
                 isIncome
                   ? "bg-emerald-50 text-emerald-600"
                   : "bg-rose-50 text-rose-600",
@@ -171,14 +175,14 @@ export function EntryItem({
                   {entry.item}
                 </p>
               )}
-              {(entry.description || entry.note) && (
-                <p className="truncate text-xs text-slate-500">
-                  {entry.description || entry.note}
+              {descriptionText && (
+                <p className="line-clamp-2 text-xs text-slate-500 mt-1 leading-relaxed bg-slate-50/80 border border-slate-100 rounded-md px-2 py-1">
+                  {descriptionText}
                 </p>
               )}
             </div>
 
-            <div className="flex shrink-0 items-center gap-2">
+            <div className="flex shrink-0 items-center gap-2 self-start mt-0.5">
               {paymentStatus !== "paid" && (
                 <span
                   className={cn(
@@ -233,7 +237,7 @@ export function EntryItem({
         </Card>
       </motion.div>
 
-      {/* Entry Details Modal without explicit DialogFooter dependency */}
+      {/* Entry Details Modal */}
       <Dialog open={detailsOpen} onOpenChange={setDetailsOpen}>
         <DialogContent className="max-w-lg bg-white p-6 rounded-2xl border border-slate-200 shadow-xl">
           <DialogHeader className="mb-4">
@@ -241,7 +245,7 @@ export function EntryItem({
               <span className="text-xs font-bold text-neutral-600">
                 {isIncome ? "Customer Sale Report" : "Expense Report"}
               </span>
-              <Badge
+              {/* <Badge
                 className={cn(
                   "text-xs px-2 py-0.5 font-semibold",
                   isIncome
@@ -250,9 +254,9 @@ export function EntryItem({
                 )}
               >
                 {isIncome ? "Income" : "Expense"}
-              </Badge>
+              </Badge> */}
             </div>
-            <DialogTitle className="text-xl font-bold text-slate-900">
+            <DialogTitle className="text-lg md:text-xl font-bold text-slate-900">
               {isIncome ? entry.customerName : entry.item}
             </DialogTitle>
             <DialogDescription className="text-xs text-slate-500 flex items-center gap-1.5 mt-1">
@@ -262,31 +266,33 @@ export function EntryItem({
 
           <div className="space-y-4 text-slate-900">
             {/* Amount Box */}
-            <div className="p-4 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-between">
-              <div>
-                <p className="text-xs text-slate-500 font-medium">
-                  Total Charge
-                </p>
-                <p className="text-2xl font-extrabold text-slate-900">
-                  {formatNaira(entry.amount)}
-                </p>
-              </div>
-              <div className="text-right">
-                <p className="text-xs text-slate-500 font-medium">
-                  Payment Status
-                </p>
-                <p
-                  className={cn(
-                    "text-sm font-bold capitalize",
-                    paymentStatus === "paid"
-                      ? "text-emerald-600"
-                      : paymentStatus === "part"
-                        ? "text-amber-600"
-                        : "text-rose-600",
-                  )}
-                >
-                  {paymentStatus}
-                </p>
+            <div className="flex border-b border-b-neutral-200 items-center justify-between">
+              <div className="flex justify-between gap-2 w-full py-3">
+                <div className="">
+                  <p className="text-xs text-slate-500 font-medium">
+                    Total Charge
+                  </p>
+                  <p className="text-2xl font-extrabold text-slate-900">
+                    {formatNaira(entry.amount)}
+                  </p>
+                </div>
+                <div className="text-right">
+                  <p className="text-xs text-slate-500 font-medium">
+                    Payment Status
+                  </p>
+                  <p
+                    className={cn(
+                      "text-sm font-bold capitalize",
+                      paymentStatus === "paid"
+                        ? "text-emerald-600"
+                        : paymentStatus === "part"
+                          ? "text-amber-600"
+                          : "text-rose-600",
+                    )}
+                  >
+                    {paymentStatus}
+                  </p>
+                </div>
               </div>
             </div>
 
@@ -328,13 +334,13 @@ export function EntryItem({
               )}
 
             {/* Description Text */}
-            {(entry.description || entry.note) && (
+            {descriptionText && (
               <div className="space-y-1.5">
-                <p className="text-xs font-medium text-slate-500">
+                <p className="text-xs font-medium text-neutral-800">
                   Work Description / Details
                 </p>
-                <div className="p-3 rounded-lg bg-slate-50 border border-slate-100 text-xs text-slate-700 leading-relaxed whitespace-pre-wrap">
-                  {entry.description || entry.note}
+                <div className="text-xs text-neutral-600">
+                  {descriptionText}
                 </div>
               </div>
             )}

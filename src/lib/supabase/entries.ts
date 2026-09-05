@@ -24,6 +24,7 @@ export async function createEntryAction(input: EntryInput): Promise<Entry> {
       service_name: input.serviceName ?? null,
       item: input.item ?? null,
       note: input.note ?? null,
+      // description: input.description ?? null,
     })
     .select()
     .single();
@@ -74,6 +75,7 @@ export async function updateEntryAction(
       service_name: input.serviceName ?? null,
       item: input.item ?? null,
       note: input.note ?? null,
+      // description: input.description ?? null,
     })
     .eq("id", id)
     .eq("business_id", businessId)
