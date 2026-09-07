@@ -62,7 +62,7 @@ export function Sidebar() {
                 href={item.href}
                 title={!isExpanded ? item.label : undefined}
                 className={cn(
-                  "flex items-center w-full transition-colors h-10 rounded-xl gap-3",
+                  "flex items-center w-full transition-colors h-10 rounded-md gap-3",
                   isExpanded ? "justify-start px-2.5" : "justify-center px-0",
                   active
                     ? "bg-accent-soft text-accent"
