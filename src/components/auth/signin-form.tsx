@@ -182,7 +182,7 @@ export function SignInForm() {
                 </button>
               </div>
               {clerkErrors?.fields?.password?.message && (
-                <p className="text-xs text-expense">
+                <p className="text-xs text-white md:text-accent">
                   {clerkErrors.fields.password.message}
                 </p>
               )}
@@ -199,7 +199,9 @@ export function SignInForm() {
 
             <div id="clerk-captcha" />
 
-            {formError && <p className="text-sm text-expense">{formError}</p>}
+            {formError && (
+              <p className="text-sm text-white md:text-accent">{formError}</p>
+            )}
 
             <Button
               className="bg-[#ff5a1f] border-none py-5 text-white hover:bg-[#ff5a1f]/90 md:bg-accent md:text-accent-foreground md:hover:bg-accent/90"
