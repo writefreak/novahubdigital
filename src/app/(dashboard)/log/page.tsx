@@ -3,8 +3,10 @@
 import * as React from "react";
 import { useStore, useInitStore } from "@/lib/store";
 import { EntryItem } from "@/components/log/entry-item";
+import { EntryTable } from "@/components/log/entry-table";
+import { EntryForm } from "@/components/log/entry-form";
 import { formatDay, todayStr } from "@/lib/utils";
-import { Entry } from "@/lib/types";
+import type { Entry } from "@/lib/types";
 
 export default function LogPage() {
   useInitStore();
@@ -134,23 +136,42 @@ export default function LogPage() {
         ))}
       </div>
 
+      {/* Entries List Section */}
       {dayEntries.length === 0 ? (
         <p className="rounded-xl border border-dashed border-border p-8 text-center text-xs md:text-sm text-muted-foreground">
           No entries for this day yet. Tap the + button to log a sale or
           expense.
         </p>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-2.5">
-          {dayEntries.map((entry, i) => (
-            <EntryItem
-              key={entry.id}
-              entry={entry}
-              index={i}
-              onEdit={handleEdit}
-            />
-          ))}
-        </div>
+        <>
+          {/* Mobile View: Stacked Cards */}
+          <div className="flex flex-col gap-2.5 md:hidden">
+            {dayEntries.map((entry, i) => (
+              <EntryItem
+                key={entry.id}
+                entry={entry}
+                index={i}
+                onEdit={handleEdit}
+              />
+            ))}
+          </div>
+
+          {/* Desktop View: Single Unified Table */}
+          <div className="hidden md:block">
+            <EntryTable entries={dayEntries} onEdit={handleEdit} />
+          </div>
+        </>
       )}
+
+      {/* Edit Form Modal */}
+      <EntryForm
+        open={formOpen}
+        onOpenChange={(open) => {
+          setFormOpen(open);
+          if (!open) setEditingEntry(null);
+        }}
+        initialEntry={editingEntry}
+      />
     </div>
   );
 }

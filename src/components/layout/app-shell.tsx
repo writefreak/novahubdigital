@@ -22,7 +22,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <div className="flex md:min-h-screen flex-1 flex-col">
         <Topbar />
         <main className="flex-1 px-4 pb-24 bg-white pt-4 lg:px-8 lg:pb-10 lg:pt-6">
-          <div className="mx-auto md:w-full max-w-5xl">{children}</div>
+          <div className="mx-auto md:w-full">{children}</div>
         </main>
       </div>
       <BottomNav />
