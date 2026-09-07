@@ -115,7 +115,7 @@ export function SignInForm() {
           "
         >
           <div className="mb-8">
-            <h1 className="font-display hidden md:block text-xl md:text-3xl text-white md:text-foreground">
+            <h1 className="font-display font-semibold hidden md:block text-xl md:text-3xl text-white md:text-foreground">
               Sign into your account
             </h1>
             <h1 className="font-display font-semibold md:hidden text-2xl text-white md:text-foreground">
@@ -213,7 +213,7 @@ export function SignInForm() {
               Don&apos;t have an account?{" "}
               <Link
                 href="/signup"
-                className="font-medium text-white underline underline-offset-4 hover:opacity-80"
+                className="font-medium text-white md:text-accent underline underline-offset-4 hover:opacity-80"
               >
                 Sign up
               </Link>
