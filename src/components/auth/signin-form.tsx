@@ -191,7 +191,7 @@ export function SignInForm() {
             <div className="flex justify-end pt-1">
               <Link
                 href="/forgot-password"
-                className="text-xs font-medium text-white underline"
+                className="text-xs font-medium text-white md:text-accent underline"
               >
                 Forgot password?
               </Link>
