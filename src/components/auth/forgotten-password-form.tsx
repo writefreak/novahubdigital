@@ -144,7 +144,7 @@ export function ForgotPasswordForm() {
           alt=""
           fill
           priority
-          className="object-cover brightness-75"
+          className="object-cover brightness-50 md:brightness-75"
         />
         <div className="absolute inset-0 bg-black/45 md:bg-black/45" />
 
