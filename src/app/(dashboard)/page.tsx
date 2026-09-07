@@ -6,6 +6,7 @@ import { StatCard } from "@/components/dashboard/stat-card";
 import { TrendChart } from "@/components/dashboard/trend-chart";
 import { EntryItem } from "@/components/log/entry-item";
 import { EntryForm } from "@/components/log/entry-form";
+import { EntryTable } from "@/components/log/entry-table";
 import { useTodayEntries, useInitStore } from "@/lib/store";
 import type { Entry } from "@/lib/types";
 import Link from "next/link";
@@ -66,7 +67,7 @@ export default function DashboardPage() {
       </div>
 
       <div>
-        <div className="mb-3 flex items-center justify-between">
+        <div className="mb-3 pt-5 flex items-center justify-between">
           <h2 className="font-display text-sm md:text-lg font-semibold">
             Today&apos;s activity
           </h2>
@@ -77,21 +78,30 @@ export default function DashboardPage() {
             View all
           </Link>
         </div>
+
         {recent.length === 0 ? (
           <p className="rounded-xl border border-dashed border-accent/30 bg-accent-soft/30 p-6 text-center text-xs md:text-sm text-muted-foreground">
             Nothing logged yet today. Tap the + button to add your first entry.
           </p>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-2.5">
-            {recent.map((entry, i) => (
-              <EntryItem
-                key={entry.id}
-                entry={entry}
-                index={i}
-                onEdit={handleEdit}
-              />
-            ))}
-          </div>
+          <>
+            {/* Mobile View: Cards */}
+            <div className="flex flex-col gap-2.5 md:hidden">
+              {recent.map((entry, i) => (
+                <EntryItem
+                  key={entry.id}
+                  entry={entry}
+                  index={i}
+                  onEdit={handleEdit}
+                />
+              ))}
+            </div>
+
+            {/* Desktop View: Single Consolidated Table */}
+            <div className="hidden md:block">
+              <EntryTable entries={recent} onEdit={handleEdit} />
+            </div>
+          </>
         )}
       </div>
 

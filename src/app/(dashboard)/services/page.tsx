@@ -78,7 +78,7 @@ export default function ServicesPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.25, delay: Math.min(i * 0.04, 0.3) }}
           >
-            <Card className="group relative flex flex-col justify-between rounded-3xl border border-slate-100 bg-white p-5 shadow-xs transition-shadow hover:shadow-md">
+            <Card className="group relative flex flex-col justify-between rounded-3xl border border-slate-100 bg-white p-3 shadow-xs transition-shadow hover:shadow-md">
               {/* Top Content Row */}
               <div className="flex items-start justify-between gap-3">
                 {/* LHS: Avatar Thumbnail + Service Info */}

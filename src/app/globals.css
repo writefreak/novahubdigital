@@ -102,3 +102,31 @@ h4,
 ::-webkit-scrollbar-thumb:hover {
   background: var(--accent-dim);
 }
+
+@media print {
+  /* Hide main app UI, backdrops, overlays, and modal close buttons */
+  body > *:not([data-radix-portal]),
+  [data-radix-portal] > div:first-child,
+  .no-print,
+  button[aria-label="Close"] {
+    display: none !important;
+  }
+
+  /* Reset the Radix portal sheet container to take up full A4 width */
+  [data-radix-portal] {
+    position: static !important;
+    display: block !important;
+  }
+
+  [role="dialog"] {
+    position: static !important;
+    transform: none !important;
+    max-width: 100% !important;
+    width: 100% !important;
+    height: auto !important;
+    box-shadow: none !important;
+    border: none !important;
+    padding: 0 !important;
+    background: transparent !important;
+  }
+}

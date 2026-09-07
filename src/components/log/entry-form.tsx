@@ -96,7 +96,7 @@ export function EntryForm({
   //   }
   // }, [initialEntry, open]);
 
-  // ✅ CORRECT: Pass the array reference directly
+  // Passing the array reference directly
   React.useEffect(() => {
     if (initialEntry) {
       setDate(initialEntry.date || todayStr());
@@ -290,17 +290,17 @@ export function EntryForm({
         </SheetHeader>
 
         <div className="flex-1 overflow-y-auto p-6 bg-white">
-          <div className="mb-6 p-3.5 bg-slate-50 border border-slate-200/80 rounded-xl flex flex-col gap-2.5">
+          <div className="mb-6 p-3.5 border border-[#ff5a1f] rounded-xl flex flex-col gap-2.5">
             <div className="flex items-center justify-between">
               <Label
                 htmlFor="entry-date"
-                className="text-xs font-semibold uppercase tracking-wider text-slate-500"
+                className="text-xs font-semibold uppercase text-neutral-700"
               >
                 Transaction Date
               </Label>
-              <span className="text-xs font-medium text-[#ff5a1f] bg-[#ff5a1f]/10 px-2 py-0.5 rounded-full">
+              {/* <span className="text-xs font-medium text-[#ff5a1f] bg-[#ff5a1f]/10 px-2 py-0.5 rounded-full">
                 {date === todayStr() ? "Today" : date}
-              </span>
+              </span> */}
             </div>
 
             <div className="flex items-center gap-2">
@@ -426,7 +426,7 @@ export function EntryForm({
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                     rows={3}
-                    className="bg-white border-slate-200 text-slate-900"
+                    className="bg-white text-xs border-slate-200 text-neutral-700"
                   />
                 </div>
 
@@ -459,10 +459,10 @@ export function EntryForm({
                         setPaymentStatus(v as PaymentStatus)
                       }
                     >
-                      <SelectTrigger className="w-full bg-white border-slate-200 text-slate-900">
+                      <SelectTrigger className="w-full bg-white border-slate-200 text-xs text-slate-900">
                         <SelectValue placeholder="Status" />
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectContent className="text-xs text-slate-900">
                         <SelectItem value="paid">Fully Paid</SelectItem>
                         <SelectItem value="part">Part Payment</SelectItem>
                         <SelectItem value="unpaid">Unpaid / Owning</SelectItem>

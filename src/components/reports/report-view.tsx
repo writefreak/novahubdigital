@@ -227,8 +227,142 @@ export function ReportView({
             </div>
           </>
         )}
+      </div>
 
-        {/* <div className="no-print flex items-center gap-2 self-start sm:self-auto">
+      {/* Transaction Details Slide-Over Sheet */}
+      <Sheet open={!!selectedEntry} onOpenChange={() => setSelectedEntry(null)}>
+        <SheetContent className="w-full max-w-md p-6 overflow-y-auto print:border-none print:shadow-none">
+          <SheetHeader className="pb-4 border-b border-slate-100 print:border-b-2 print:border-slate-800 print:pb-2">
+            <SheetTitle className="text-lg font-bold text-slate-900 print:text-2xl">
+              Transaction Details
+            </SheetTitle>
+            <SheetDescription className="text-xs text-slate-500">
+              Full record information from report logs.
+            </SheetDescription>
+          </SheetHeader>
+
+          {selectedEntry &&
+            (() => {
+              const isIncome = selectedEntry.type === "income";
+
+              // Safely extract services list array
+              const rawServices = isIncome
+                ? selectedEntry.serviceNames || selectedEntry.serviceName || []
+                : [];
+              const servicesList = Array.isArray(rawServices)
+                ? rawServices
+                : typeof rawServices === "string"
+                  ? rawServices
+                      .split(",")
+                      .map((s) => s.trim())
+                      .filter(Boolean)
+                  : [];
+
+              // Extract description/note text
+              const descriptionText =
+                selectedEntry.description || selectedEntry.note || "";
+
+              return (
+                <div className="py-6 flex flex-col gap-5 print:py-4 print:gap-4">
+                  {/* Amount Display */}
+                  <div>
+                    <span className="text-[11px] font-bold uppercase tracking-wider text-neutral-700">
+                      Total Amount
+                    </span>
+                    <p
+                      className={`text-2xl font-bold mt-1 ${
+                        isIncome ? "text-emerald-600" : "text-rose-600"
+                      }`}
+                    >
+                      {formatNaira(selectedEntry.amount)}
+                    </p>
+                  </div>
+
+                  {/* Key Attributes */}
+                  <div className="space-y-3 text-xs print:space-y-2">
+                    <div className="flex items-center justify-between print:border-b print:border-slate-100 print:py-1">
+                      <span className="flex items-center gap-2 text-slate-500">
+                        <Tag className="w-4 h-4 text-slate-400 print:hidden" />{" "}
+                        Type
+                      </span>
+                      <span className="font-bold text-slate-800 capitalize">
+                        {selectedEntry.type}
+                      </span>
+                    </div>
+
+                    <div className="flex items-center justify-between print:border-b print:border-slate-100 print:py-1">
+                      <span className="flex items-center gap-2 text-slate-500">
+                        <User className="w-4 h-4 text-slate-400 print:hidden" />{" "}
+                        Customer Name
+                      </span>
+                      <span className="font-bold text-slate-800">
+                        {isIncome
+                          ? selectedEntry.customerName || "N/A"
+                          : selectedEntry.item || "N/A"}
+                      </span>
+                    </div>
+
+                    <div className="flex items-center justify-between print:border-b print:border-slate-100 print:py-1">
+                      <span className="flex items-center gap-2 text-slate-500">
+                        <Calendar className="w-4 h-4 text-slate-400 print:hidden" />{" "}
+                        Date
+                      </span>
+                      <span className="font-bold text-slate-800">
+                        {selectedEntry.date || dateStr || "N/A"}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Services Rendered */}
+                  {isIncome && servicesList.length > 0 && (
+                    <div className="space-y-2 pt-3 md:pt-5 print:pt-2">
+                      <p className="text-xs font-semibold text-neutral-700">
+                        Services Rendered
+                      </p>
+                      <div className="flex flex-wrap gap-1.5">
+                        {servicesList.map((svc, i) => (
+                          <span
+                            key={i}
+                            className="px-2.5 py-1 rounded-md bg-[#ff5a1f] text-white text-xs font-medium print:bg-slate-100 print:text-slate-800 print:border print:border-slate-200"
+                          >
+                            {svc}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Description Text */}
+                  {descriptionText && (
+                    <div className="space-y-1.5 rounded-xl pt-4 print:pt-2">
+                      <p className="text-xs font-semibold text-neutral-700">
+                        Work Description / Details
+                      </p>
+                      <p className="text-xs text-neutral-500 leading-relaxed whitespace-pre-wrap">
+                        {descriptionText}
+                      </p>
+                    </div>
+                  )}
+
+                  {/* Edit Trigger Button */}
+                  {onEditEntry && (
+                    <Button
+                      onClick={() => {
+                        const entryToEdit = selectedEntry;
+                        setSelectedEntry(null);
+                        onEditEntry(entryToEdit);
+                      }}
+                      className="w-full mt-2 rounded-xl bg-[#ff5a1f] text-white hover:bg-[#e04f1a] gap-2 print:hidden"
+                    >
+                      <Pencil className="w-4 h-4" />
+                      <span>Edit Transaction</span>
+                    </Button>
+                  )}
+                </div>
+              );
+            })()}
+
+          <div className="no-print flex items-center gap-2 justify-end print:hidden">
             <Button
               variant="outline"
               size="sm"
@@ -255,99 +389,7 @@ export function ReportView({
               <Printer className="h-4 w-4" />
               <span>Print Statement</span>
             </Button>
-          </div> */}
-      </div>
-
-      {/* Transaction Details Slide-Over Sheet */}
-      <Sheet open={!!selectedEntry} onOpenChange={() => setSelectedEntry(null)}>
-        <SheetContent className="w-full max-w-md md:rounded-l-3xl p-6">
-          <SheetHeader className="pb-4 border-b border-slate-100">
-            <SheetTitle className="text-lg font-bold text-slate-900">
-              Transaction Details
-            </SheetTitle>
-            <SheetDescription className="text-xs text-slate-500">
-              Full record information from report logs.
-            </SheetDescription>
-          </SheetHeader>
-
-          {selectedEntry && (
-            <div className="py-6 flex flex-col gap-5">
-              {/* Amount Display */}
-              <div className="p-4 rounded-2xl bg-slate-50 border border-slate-100 text-center">
-                <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
-                  Total Amount
-                </span>
-                <p
-                  className={`text-2xl font-bold mt-1 ${
-                    selectedEntry.type === "income"
-                      ? "text-emerald-600"
-                      : "text-rose-600"
-                  }`}
-                >
-                  {formatNaira(selectedEntry.amount)}
-                </p>
-              </div>
-
-              {/* Key Attributes */}
-              <div className="space-y-3 text-xs">
-                <div className="flex items-center justify-between p-3 rounded-xl border border-slate-100">
-                  <span className="flex items-center gap-2 text-slate-500">
-                    <Tag className="w-4 h-4 text-slate-400" /> Type
-                  </span>
-                  <span className="font-bold text-slate-800 capitalize">
-                    {selectedEntry.type}
-                  </span>
-                </div>
-
-                <div className="flex items-center justify-between p-3 rounded-xl border border-slate-100">
-                  <span className="flex items-center gap-2 text-slate-500">
-                    <User className="w-4 h-4 text-slate-400" /> Name / Item
-                  </span>
-                  <span className="font-bold text-slate-800">
-                    {selectedEntry.type === "income"
-                      ? selectedEntry.customerName || "N/A"
-                      : selectedEntry.item || "N/A"}
-                  </span>
-                </div>
-
-                <div className="flex items-center justify-between p-3 rounded-xl border border-slate-100">
-                  <span className="flex items-center gap-2 text-slate-500">
-                    <FileText className="w-4 h-4 text-slate-400" /> Service /
-                    Details
-                  </span>
-                  <span className="font-bold text-slate-800">
-                    {selectedEntry.type === "income"
-                      ? selectedEntry.serviceName || "N/A"
-                      : selectedEntry.note || "N/A"}
-                  </span>
-                </div>
-
-                <div className="flex items-center justify-between p-3 rounded-xl border border-slate-100">
-                  <span className="flex items-center gap-2 text-slate-500">
-                    <Calendar className="w-4 h-4 text-slate-400" /> Date
-                  </span>
-                  <span className="font-bold text-slate-800">
-                    {selectedEntry.date || dateStr || "N/A"}
-                  </span>
-                </div>
-              </div>
-
-              {/* Edit Trigger Button */}
-              {onEditEntry && (
-                <Button
-                  onClick={() => {
-                    const entryToEdit = selectedEntry;
-                    setSelectedEntry(null);
-                    onEditEntry(entryToEdit);
-                  }}
-                  className="w-full mt-4 rounded-xl bg-[#ff5a1f] text-white hover:bg-[#e04f1a] gap-2"
-                >
-                  <Pencil className="w-4 h-4" />
-                  <span>Edit Transaction</span>
-                </Button>
-              )}
-            </div>
-          )}
+          </div>
         </SheetContent>
       </Sheet>
     </div>
