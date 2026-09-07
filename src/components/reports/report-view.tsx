@@ -15,6 +15,8 @@ import {
   Scale,
   TrendingDown,
   TrendingUp,
+  Wallet,
+  HandCoins,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -34,6 +36,7 @@ import {
 import { formatNaira } from "@/lib/utils";
 import type { Entry } from "@/lib/types";
 import { StatCard } from "../dashboard/stat-card";
+import { useStore } from "@/lib/store";
 
 interface ReportViewProps {
   entries: Entry[];
@@ -56,6 +59,26 @@ export function ReportView({
   const totalIncome = income.reduce((s, e) => s + e.amount, 0);
   const totalExpense = expenses.reduce((s, e) => s + e.amount, 0);
   const netTotal = totalIncome - totalExpense;
+
+  // Lifetime totals (independent of the range-filtered `entries` prop above)
+  const allEntries = useStore((s) => s.entries || []);
+
+  const lifetimeIncome = allEntries.filter((e) => e.type === "income");
+  const lifetimeExpenses = allEntries.filter((e) => e.type === "expense");
+
+  const lifetimeTotalIncome = lifetimeIncome.reduce((s, e) => s + e.amount, 0);
+  const lifetimeTotalExpense = lifetimeExpenses.reduce(
+    (s, e) => s + e.amount,
+    0,
+  );
+  const lifetimeNet = lifetimeTotalIncome - lifetimeTotalExpense;
+
+  // Outstanding receivables: unpaid + the remainder on part-payments
+  const amountOwedToYou = lifetimeIncome.reduce((sum, e) => {
+    if (e.paymentStatus === "paid") return sum;
+    const paid = e.amountPaid ?? 0;
+    return sum + Math.max(e.amount - paid, 0);
+  }, 0);
 
   async function handleShare() {
     const targetDate = dateStr || new Date().toISOString().slice(0, 10);
@@ -90,6 +113,36 @@ export function ReportView({
     <div className="flex flex-col gap-6">
       {/* Header & Controls Bar */}
       {/* <Card className="rounded-3xl border border-slate-200/80 bg-white p-6 shadow-xs"></Card> */}
+
+      {/* Lifetime Overview Cards */}
+      {/* Lifetime Overview Cards */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <StatCard
+          label="Total Revenue"
+          amount={lifetimeTotalIncome}
+          icon={TrendingUp}
+          tone="income"
+        />
+        <StatCard
+          label="Total Expenses"
+          amount={lifetimeTotalExpense}
+          icon={TrendingDown}
+          tone="expense"
+        />
+        <StatCard
+          label="Owed to You"
+          amount={amountOwedToYou}
+          icon={HandCoins}
+          tone="income"
+        />
+        <StatCard
+          label="Net Total"
+          amount={lifetimeNet}
+          icon={Wallet}
+          tone="accent"
+          emphasis
+        />
+      </div>
 
       {/* Main Transactions Log */}
       <div className="overflow-hidden md:pt-8 pt-4">
