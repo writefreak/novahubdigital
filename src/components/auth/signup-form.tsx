@@ -246,7 +246,7 @@ export function SignUpForm() {
                   className="bg-white/10 border-white/25 text-white placeholder:text-white/50 md:bg-background md:border-input md:text-foreground md:placeholder:text-muted-foreground"
                 />
                 {clerkErrors?.fields?.emailAddress?.message && (
-                  <p className="text-xs text-expense">
+                  <p className="text-xs text-white md:text-accent">
                     {clerkErrors.fields.emailAddress.message}
                   </p>
                 )}
@@ -286,7 +286,7 @@ export function SignUpForm() {
                   </button>
                 </div>
                 {clerkErrors?.fields?.password?.message && (
-                  <p className="text-xs text-expense">
+                  <p className="text-xs text-white md:text-accent">
                     {clerkErrors.fields.password.message}
                   </p>
                 )}
@@ -294,7 +294,9 @@ export function SignUpForm() {
 
               <div id="clerk-captcha" />
 
-              {formError && <p className="text-sm text-expense">{formError}</p>}
+              {formError && (
+                <p className="text-sm text-white md:text-accent">{formError}</p>
+              )}
 
               <Button
                 type="submit"
@@ -330,13 +332,15 @@ export function SignUpForm() {
                   className="text-center tracking-widest bg-white/10 border-white/25 text-white placeholder:text-white/50 md:bg-background md:border-input md:text-foreground md:placeholder:text-muted-foreground"
                 />
                 {clerkErrors?.fields?.code?.message && (
-                  <p className="text-xs text-expense">
+                  <p className="text-xs text-white md:text-accent">
                     {clerkErrors.fields.code.message}
                   </p>
                 )}
               </div>
 
-              {formError && <p className="text-sm text-expense">{formError}</p>}
+              {formError && (
+                <p className="text-sm text-white md:text-accent">{formError}</p>
+              )}
 
               <Button
                 type="submit"

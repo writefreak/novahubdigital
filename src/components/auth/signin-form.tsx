@@ -144,7 +144,7 @@ export function SignInForm() {
                 className="bg-white/10 border-white/25 text-white placeholder:text-white/50 md:bg-background md:border-input md:text-foreground md:placeholder:text-muted-foreground"
               />
               {clerkErrors?.fields?.identifier?.message && (
-                <p className="text-xs text-expense">
+                <p className="text-xs text-white md:text-accent">
                   {clerkErrors.fields.identifier.message}
                 </p>
               )}
