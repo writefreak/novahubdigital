@@ -172,7 +172,7 @@ export function ForgotPasswordForm() {
           "
         >
           <div className="mb-8 flex flex-col gap-2">
-            {step === "reset" && (
+            {/* {step === "reset" && (
               <button
                 type="button"
                 onClick={() => {
@@ -186,7 +186,7 @@ export function ForgotPasswordForm() {
               >
                 <ArrowLeft className="h-4 w-4" />
               </button>
-            )}
+            )} */}
             <div>
               <h1 className="font-display font-semibold hidden md:block text-xl md:text-3xl text-white md:text-foreground">
                 {step === "reset" ? "Set new password" : "Forgot password?"}
