@@ -41,6 +41,7 @@ export function EntryForm({
 
   const isEditing = Boolean(initialEntry);
 
+  const [date, setDate] = React.useState<string>(todayStr());
   const [type, setType] = React.useState<EntryType>("income");
   const [customerName, setCustomerName] = React.useState("");
   const [selectedServiceIds, setSelectedServiceIds] = React.useState<string[]>(
@@ -98,6 +99,7 @@ export function EntryForm({
   // ✅ CORRECT: Pass the array reference directly
   React.useEffect(() => {
     if (initialEntry) {
+      setDate(initialEntry.date || todayStr());
       setType(initialEntry.type);
       if (initialEntry.type === "income") {
         setCustomerName(initialEntry.customerName || "");
@@ -153,7 +155,9 @@ export function EntryForm({
     }
     // 1-to-1 dependency list (no spread operators)
   }, [initialEntry, open, services]);
+
   function reset() {
+    setDate(todayStr());
     setCustomerName("");
     setSelectedServiceIds([]);
     setAmount("");
@@ -212,7 +216,7 @@ export function EntryForm({
 
         const payload = {
           type: "income" as const,
-          date: initialEntry?.date || todayStr(),
+          date: date || todayStr(),
           amount: numAmount,
           customerName: customerName.trim(),
           serviceIds: selectedServiceIds,
@@ -235,7 +239,7 @@ export function EntryForm({
       } else {
         const payload = {
           type: "expense" as const,
-          date: initialEntry?.date || todayStr(),
+          date: date || todayStr(),
           amount: numAmount,
           item: item.trim(),
           note: note.trim(),
@@ -286,6 +290,56 @@ export function EntryForm({
         </SheetHeader>
 
         <div className="flex-1 overflow-y-auto p-6 bg-white">
+          <div className="mb-6 p-3.5 bg-slate-50 border border-slate-200/80 rounded-xl flex flex-col gap-2.5">
+            <div className="flex items-center justify-between">
+              <Label
+                htmlFor="entry-date"
+                className="text-xs font-semibold uppercase tracking-wider text-slate-500"
+              >
+                Transaction Date
+              </Label>
+              <span className="text-xs font-medium text-[#ff5a1f] bg-[#ff5a1f]/10 px-2 py-0.5 rounded-full">
+                {date === todayStr() ? "Today" : date}
+              </span>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <Input
+                id="entry-date"
+                type="date"
+                value={date}
+                max={todayStr()}
+                onChange={(e) => setDate(e.target.value)}
+                className="bg-white border-slate-200 text-slate-900 text-xs h-9 focus-visible:ring-1 focus-visible:ring-[#ff5a1f]"
+              />
+
+              <div className="flex items-center gap-1 shrink-0">
+                <button
+                  type="button"
+                  onClick={() => setDate(todayStr())}
+                  className={`text-xs px-2.5 py-1.5 rounded-md font-medium transition-colors ${
+                    date === todayStr()
+                      ? "bg-[#ff5a1f] text-white"
+                      : "bg-white text-slate-600 border border-slate-200 hover:bg-slate-100"
+                  }`}
+                >
+                  Today
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const y = new Date();
+                    y.setDate(y.getDate() - 1);
+                    setDate(y.toISOString().split("T")[0]);
+                  }}
+                  className="text-xs px-2.5 py-1.5 rounded-md font-medium bg-white text-slate-600 border border-slate-200 hover:bg-slate-100 transition-colors"
+                >
+                  Yesterday
+                </button>
+              </div>
+            </div>
+          </div>
+
           <Tabs value={type} onValueChange={(v) => setType(v as EntryType)}>
             {!isEditing && (
               <TabsList className="w-full grid grid-cols-2 bg-slate-100 p-1 rounded-lg">

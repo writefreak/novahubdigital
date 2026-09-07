@@ -82,7 +82,7 @@ export default function DashboardPage() {
             Nothing logged yet today. Tap the + button to add your first entry.
           </p>
         ) : (
-          <div className="flex flex-col gap-2.5">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-2.5">
             {recent.map((entry, i) => (
               <EntryItem
                 key={entry.id}

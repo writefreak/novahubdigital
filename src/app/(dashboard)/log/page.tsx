@@ -140,7 +140,7 @@ export default function LogPage() {
           expense.
         </p>
       ) : (
-        <div className="flex flex-col gap-2.5">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-2.5">
           {dayEntries.map((entry, i) => (
             <EntryItem
               key={entry.id}

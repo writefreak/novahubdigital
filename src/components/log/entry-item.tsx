@@ -53,7 +53,7 @@ export function EntryItem({
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.25, delay: Math.min(index * 0.04, 0.3) }}
-        className="w-full min-w-0"
+        className="w-full min-w-0 "
       >
         <Card
           onClick={() => setDetailsOpen(true)}
@@ -69,7 +69,7 @@ export function EntryItem({
                   </p>
                   <div className="pb-2">
                     {descriptionText && (
-                      <p className="line-clamp-2 text-xs text-neutral-500 pt-3 font-normal">
+                      <p className="line-clamp-2 text-xs text-neutral-500 pt-1 font-normal">
                         {descriptionText}
                       </p>
                     )}
@@ -135,91 +135,80 @@ export function EntryItem({
           </div>
 
           {/* Desktop UI */}
-          <div className="hidden sm:flex sm:flex-row sm:items-center sm:gap-3 min-w-0">
-            <div
-              className={cn(
-                "flex h-10 w-10 shrink-0 items-center justify-center rounded-full self-start mt-0.5",
-                isIncome
-                  ? "bg-emerald-50 text-emerald-600"
-                  : "bg-rose-50 text-rose-600",
-              )}
-            >
-              {isIncome ? (
-                <ShoppingBag className="h-4.5 w-4.5" />
-              ) : (
-                <Wallet className="h-4.5 w-4.5" />
-              )}
-            </div>
+          <div className="hidden md:flex md:flex-col md:gap-3">
+            <div className="">
+              <div className="flex items-center justify-between gap-2">
+                {isIncome ? (
+                  <p className="truncate text-sm font-semibold text-slate-900">
+                    {entry.customerName}{" "}
+                  </p>
+                ) : (
+                  <p className="truncate text-sm font-semibold text-slate-900">
+                    {entry.item}
+                  </p>
+                )}
+                <div
+                  className={cn(
+                    "flex h-10 w-10 shrink-0 items-center justify-center rounded-full self-start mt-0.5",
+                    isIncome
+                      ? "bg-emerald-50 text-emerald-600"
+                      : "bg-rose-50 text-rose-600",
+                  )}
+                >
+                  {isIncome ? (
+                    <ShoppingBag className="h-4.5 w-4.5" />
+                  ) : (
+                    <Wallet className="h-4.5 w-4.5" />
+                  )}
+                </div>
+              </div>
 
-            <div className="min-w-0 flex-1 hi">
-              {isIncome ? (
-                <p className="truncate text-sm font-semibold text-slate-900">
-                  {entry.customerName}{" "}
-                  <span className="font-normal text-slate-500">
-                    / {servicesText}
-                  </span>
-                </p>
-              ) : (
-                <p className="truncate text-sm font-semibold text-slate-900">
-                  {entry.item}
-                </p>
-              )}
               {descriptionText && (
-                <p className="line-clamp-2 text-xs text-slate-500 mt-1 leading-relaxed bg-slate-50/80 border border-slate-100 rounded-md px-2 py-1">
+                <p className="line-clamp-2 text-xs text-neutral-500 pt-1 font-normal">
                   {descriptionText}
                 </p>
               )}
             </div>
 
-            <div className="flex shrink-0 items-center gap-2 self-start mt-0.5">
-              {paymentStatus !== "paid" && (
-                <span
+            <div className="flex items-center border-t border-t-slate-400 justify-between w-full gap-2">
+              <div className="flex items-center justify-between w-full pt-2">
+                <Badge
                   className={cn(
-                    "text-xs font-medium px-2 py-0.5 rounded",
-                    paymentStatus === "part"
-                      ? "bg-amber-50 text-amber-700 border border-amber-200"
-                      : "bg-rose-50 text-rose-700 border border-rose-200",
+                    "text-xs px-2.5 py-0.5 font-semibold",
+                    isIncome
+                      ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                      : "bg-rose-50 text-rose-700 border-rose-200",
                   )}
                 >
-                  {paymentStatus === "part" ? "Part Paid" : "Unpaid"}
-                </span>
-              )}
-              <Badge
-                className={cn(
-                  "text-xs px-2.5 py-0.5 font-semibold",
-                  isIncome
-                    ? "bg-emerald-50 text-emerald-700 border-emerald-200"
-                    : "bg-rose-50 text-rose-700 border-rose-200",
-                )}
-              >
-                {isIncome ? "+" : "-"}
-                {formatNaira(entry.amount)}
-              </Badge>
+                  {isIncome ? "+" : "-"}
+                  {formatNaira(entry.amount)}
+                </Badge>
 
-              <div
-                className="flex items-center gap-1 border-l border-slate-100 pl-2 ml-1"
-                onClick={(e) => e.stopPropagation()}
-              >
-                {onEdit && (
+                <div
+                  className="flex gap-1"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  {onEdit && (
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8 text-slate-400 hover:text-slate-900 hover:bg-slate-100"
+                      onClick={() => onEdit(entry)}
+                      aria-label="Edit entry"
+                    >
+                      <Pencil className="h-4 w-4" />
+                    </Button>
+                  )}
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="h-8 w-8 text-slate-400 hover:text-slate-900 hover:bg-slate-100"
-                    onClick={() => onEdit(entry)}
-                    aria-label="Edit entry"
+                    className="h-8 w-8 text-slate-400 hover:text-rose-600 hover:bg-rose-50"
+                    onClick={() => removeEntry(entry.id)}
+                    aria-label="Delete entry"
                   >
-                    <Pencil className="h-4 w-4" />
+                    <Trash2 className="h-4 w-4" />
                   </Button>
-                )}
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8 text-slate-400 hover:text-rose-600 hover:bg-rose-50"
-                  onClick={() => removeEntry(entry.id)}
-                  aria-label="Delete entry"
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
+                </div>
               </div>
             </div>
           </div>

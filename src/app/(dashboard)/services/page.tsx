@@ -78,45 +78,60 @@ export default function ServicesPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.25, delay: Math.min(i * 0.04, 0.3) }}
           >
-            <Card className="group flex items-center justify-between p-2 transition-colors hover:border-border/80">
-              <div className="flex items-center gap-3.5 min-w-0">
-                {/* LHS Thumbnail */}
-                <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-lg bg-muted border border-border/40">
-                  <img
-                    src={getServiceImage(service)}
-                    alt={service.name}
-                    className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-                    loading="lazy"
-                  />
+            <Card className="group relative flex flex-col justify-between rounded-3xl border border-slate-100 bg-white p-5 shadow-xs transition-shadow hover:shadow-md">
+              {/* Top Content Row */}
+              <div className="flex items-start justify-between gap-3">
+                {/* LHS: Avatar Thumbnail + Service Info */}
+                <div className="flex items-center gap-3.5 min-w-0">
+                  <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-full border border-slate-100">
+                    <img
+                      src={getServiceImage(service)}
+                      alt={service.name}
+                      className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                      loading="lazy"
+                    />
+                  </div>
+
+                  <div className="min-w-0 flex flex-col items-start gap-1">
+                    {/* Status/Category Pill Badge */}
+                    {/* <span className="inline-flex items-center gap-1.5 rounded-full border border-slate-200/80 bg-slate-50/80 px-2.5 py-0.5 text-[11px] font-medium text-slate-500">
+                      <span className="h-1.5 w-1.5 rounded-full bg-slate-400" />
+                      Active
+                    </span> */}
+
+                    {/* Title & Price Subtitle */}
+                    <h3 className="truncate text-base font-bold text-slate-900 tracking-tight">
+                      {service.name}
+                    </h3>
+                    <p className="truncate text-xs font-medium text-slate-400">
+                      {formatNaira(service.price)}
+                    </p>
+                  </div>
                 </div>
 
-                {/* Service Details */}
-                <div className="min-w-0">
-                  <p className="truncate text-sm">{service.name}</p>
-                  <p className="font-display mt-0.5 text-base font-bold text-accent">
-                    {formatNaira(service.price)}
-                  </p>
-                </div>
+                {/* Action Buttons: Circular Edit & Delete */}
               </div>
 
-              {/* Action Buttons */}
-              <div className="flex shrink-0 gap-1 ml-2">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8"
-                  onClick={() => openEdit(service)}
-                >
-                  <Pencil className="h-4 w-4" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8 text-muted-foreground hover:text-expense"
-                  onClick={() => removeService(service.id)}
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
+              {/* Bottom Footer Details */}
+              <div className="mt-5 flex items-center justify-end border-t border-slate-100/80 pt-3 text-xs font-semibold text-slate-700">
+                <div className="flex items-center gap-1 shrink-0">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-9 w-9 rounded-full bg-slate-100/80 text-slate-700 hover:bg-slate-200"
+                    onClick={() => openEdit(service)}
+                  >
+                    <Pencil className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-9 w-9 rounded-full bg-slate-100/80 text-slate-400 hover:text-red-600 hover:bg-red-50"
+                    onClick={() => removeService(service.id)}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
               </div>
             </Card>
           </motion.div>

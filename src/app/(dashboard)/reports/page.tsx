@@ -33,7 +33,7 @@ export default function ReportsPage() {
     <div className="flex flex-col gap-5">
       <div>
         <h1 className="font-display text-xl md:text-2xl font-bold tracking-tight">
-          Reports
+          Sales Reports
         </h1>
         <p className="mt-1 text-xs md:text-sm text-muted-foreground">
           A detailed summary of your admin and financial activities.
