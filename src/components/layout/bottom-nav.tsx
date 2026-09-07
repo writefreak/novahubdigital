@@ -12,7 +12,7 @@ export function BottomNav() {
   return (
     <nav className="no-print fixed bottom-4 left-1/2 z-40 w-[calc(100%-2rem)] max-w-sm -translate-x-1/2 lg:hidden">
       <LayoutGroup id="bottom-bar">
-        <div className="flex items-center justify-around rounded-full bg-card/95 px-2 py-2 shadow-md backdrop-blur border border-border/50">
+        <div className="flex items-center justify-around rounded-2xl bg-card/95 px-2 py-2 shadow-md backdrop-blur border border-border/50">
           {navItems.map((item) => {
             const active = pathname === item.href;
 

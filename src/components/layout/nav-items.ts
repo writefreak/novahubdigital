@@ -5,5 +5,5 @@ export const navItems = [
   { href: "/log", label: "Daily Log", icon: NotebookPen },
   { href: "/services", label: "Services", icon: Wrench },
   { href: "/reports", label: "Reports", icon: FileText },
-  { href: "/team", label: "Team", icon: Users },
+  // { href: "/team", label: "Team", icon: Users },
 ];

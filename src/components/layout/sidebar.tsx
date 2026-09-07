@@ -52,7 +52,7 @@ export function Sidebar() {
 
         {/* Navigation Links */}
         <nav
-          className={`flex flex-col pt-6 w-full flex-1 ${isExpanded ? "gap-2" : "gap-8"}`}
+          className={`flex flex-col pt-6 w-full flex-1 ${isExpanded ? "gap-5" : "gap-8"}`}
         >
           {navItems.map((item) => {
             const active = pathname === item.href;
