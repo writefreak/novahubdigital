@@ -62,40 +62,6 @@ export function EntryForm({
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
 
-  // React.useEffect(() => {
-  //   if (initialEntry) {
-  //     setType(initialEntry.type);
-  //     if (initialEntry.type === "income") {
-  //       setCustomerName(initialEntry.customerName || "");
-  //       setSelectedServiceIds(initialEntry.serviceIds || []);
-  //       setAmount(
-  //         initialEntry.amount !== undefined ? String(initialEntry.amount) : "",
-  //       );
-  //       setAmountPaid(
-  //         initialEntry.amountPaid !== undefined
-  //           ? String(initialEntry.amountPaid)
-  //           : "",
-  //       );
-  //       setPaymentStatus(initialEntry.paymentStatus || "paid");
-  //       setDescription(initialEntry.note || initialEntry.description || "");
-  //     } else {
-  //       setItem(initialEntry.item || "");
-  //       setAmount(
-  //         initialEntry.amount !== undefined ? String(initialEntry.amount) : "",
-  //       );
-  //       setExpenseAmountPaid(
-  //         initialEntry.amountPaid !== undefined
-  //           ? String(initialEntry.amountPaid)
-  //           : "",
-  //       );
-  //       setExpensePaymentStatus(initialEntry.paymentStatus || "paid");
-  //       setNote(initialEntry.note || initialEntry.description || "");
-  //     }
-  //   } else {
-  //     reset();
-  //   }
-  // }, [initialEntry, open]);
-
   // Passing the array reference directly
   React.useEffect(() => {
     if (initialEntry) {
@@ -130,11 +96,10 @@ export function EntryForm({
         setAmount(
           initialEntry.amount !== undefined ? String(initialEntry.amount) : "",
         );
-        setAmountPaid(
-          initialEntry.amountPaid !== undefined
-            ? String(initialEntry.amountPaid)
-            : "",
-        );
+        // Editing an existing part-paid entry: this field now means
+        // "new payment just received", not "the running total" — so it
+        // always starts empty, never pre-filled with the old amountPaid.
+        setAmountPaid("");
         setPaymentStatus(initialEntry.paymentStatus || "paid");
         setDescription(initialEntry.note || initialEntry.description || "");
       } else {
@@ -142,11 +107,8 @@ export function EntryForm({
         setAmount(
           initialEntry.amount !== undefined ? String(initialEntry.amount) : "",
         );
-        setExpenseAmountPaid(
-          initialEntry.amountPaid !== undefined
-            ? String(initialEntry.amountPaid)
-            : "",
-        );
+        // Same reasoning as amountPaid above.
+        setExpenseAmountPaid("");
         setExpensePaymentStatus(initialEntry.paymentStatus || "paid");
         setNote(initialEntry.note || initialEntry.description || "");
       }
@@ -214,6 +176,25 @@ export function EntryForm({
           selectedServiceIds.includes(s.id),
         );
 
+        // When editing, the "Amount Paid" field is the NEW payment just
+        // received, so it gets added on top of whatever was already paid
+        // — it never replaces the running total.
+        const priorPaid = isEditing ? (initialEntry?.amountPaid ?? 0) : 0;
+        const newTotalPaid =
+          paymentStatus === "part"
+            ? priorPaid + (Number(amountPaid) || 0)
+            : paymentStatus === "paid"
+              ? numAmount
+              : 0;
+
+        // Safety net: if a part-payment brings the total to (or past) the
+        // full amount, flip the status to "paid" automatically instead of
+        // leaving the customer stuck looking like they still owe money.
+        const finalStatus: PaymentStatus =
+          paymentStatus === "part" && newTotalPaid >= numAmount
+            ? "paid"
+            : paymentStatus;
+
         const payload = {
           type: "income" as const,
           date: date || todayStr(),
@@ -222,13 +203,8 @@ export function EntryForm({
           serviceIds: selectedServiceIds,
           serviceNames: selectedServices.map((s) => s.name),
           note: description.trim(),
-          paymentStatus,
-          amountPaid:
-            paymentStatus === "part"
-              ? Number(amountPaid) || 0
-              : paymentStatus === "paid"
-                ? numAmount
-                : 0,
+          paymentStatus: finalStatus,
+          amountPaid: newTotalPaid,
         };
 
         if (isEditing && initialEntry?.id) {
@@ -237,19 +213,27 @@ export function EntryForm({
           await addEntry(payload);
         }
       } else {
+        const priorPaid = isEditing ? (initialEntry?.amountPaid ?? 0) : 0;
+        const newTotalPaid =
+          expensePaymentStatus === "part"
+            ? priorPaid + (Number(expenseAmountPaid) || 0)
+            : expensePaymentStatus === "paid"
+              ? numAmount
+              : 0;
+
+        const finalExpenseStatus: PaymentStatus =
+          expensePaymentStatus === "part" && newTotalPaid >= numAmount
+            ? "paid"
+            : expensePaymentStatus;
+
         const payload = {
           type: "expense" as const,
           date: date || todayStr(),
           amount: numAmount,
           item: item.trim(),
           note: note.trim(),
-          paymentStatus: expensePaymentStatus,
-          amountPaid:
-            expensePaymentStatus === "part"
-              ? Number(expenseAmountPaid) || 0
-              : expensePaymentStatus === "paid"
-                ? numAmount
-                : 0,
+          paymentStatus: finalExpenseStatus,
+          amountPaid: newTotalPaid,
         };
 
         if (isEditing && initialEntry?.id) {
@@ -298,9 +282,6 @@ export function EntryForm({
               >
                 Transaction Date
               </Label>
-              {/* <span className="text-xs font-medium text-[#ff5a1f] bg-[#ff5a1f]/10 px-2 py-0.5 rounded-full">
-                {date === todayStr() ? "Today" : date}
-              </span> */}
             </div>
 
             <div className="flex items-center gap-2">
@@ -477,7 +458,11 @@ export function EntryForm({
                       htmlFor="income-amount-paid"
                       className="text-slate-700 font-medium"
                     >
-                      Amount Paid So Far (₦)
+                      {isEditing
+                        ? `New Payment Received Just Now (₦) — already paid: ${formatNaira(
+                            initialEntry?.amountPaid ?? 0,
+                          )}`
+                        : "Amount Paid So Far (₦)"}
                     </Label>
                     <Input
                       id="income-amount-paid"
@@ -557,7 +542,11 @@ export function EntryForm({
                       htmlFor="expense-amount-paid"
                       className="text-slate-700 font-medium"
                     >
-                      Amount Paid So Far (₦)
+                      {isEditing
+                        ? `New Payment Made Just Now (₦) — already paid: ${formatNaira(
+                            initialEntry?.amountPaid ?? 0,
+                          )}`
+                        : "Amount Paid So Far (₦)"}
                     </Label>
                     <Input
                       id="expense-amount-paid"

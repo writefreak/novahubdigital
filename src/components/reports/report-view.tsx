@@ -12,20 +12,12 @@ import {
   FileText,
   User,
   Tag,
-  Scale,
   TrendingDown,
   TrendingUp,
   Wallet,
   HandCoins,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from "@/components/ui/card";
 import {
   Sheet,
   SheetContent,
@@ -54,13 +46,9 @@ export function ReportView({
   const [copied, setCopied] = React.useState(false);
   const [selectedEntry, setSelectedEntry] = React.useState<Entry | null>(null);
 
-  const income = entries.filter((e) => e.type === "income");
-  const expenses = entries.filter((e) => e.type === "expense");
-  const totalIncome = income.reduce((s, e) => s + e.amount, 0);
-  const totalExpense = expenses.reduce((s, e) => s + e.amount, 0);
-  const netTotal = totalIncome - totalExpense;
-
-  // Lifetime totals (independent of the range-filtered `entries` prop above)
+  // Lifetime totals (independent of the range-filtered `entries` prop,
+  // which is only used below to render the transaction log for the
+  // selected period)
   const allEntries = useStore((s) => s.entries || []);
 
   const lifetimeIncome = allEntries.filter((e) => e.type === "income");
@@ -73,9 +61,11 @@ export function ReportView({
   );
   const lifetimeNet = lifetimeTotalIncome - lifetimeTotalExpense;
 
-  // Outstanding receivables: unpaid + the remainder on part-payments
+  // Outstanding receivables: derived purely from amount vs amountPaid.
+  // paymentStatus is never checked here — it's just a display label and
+  // can't be trusted as the source of truth, so this only ever looks at
+  // the two numbers that actually represent money.
   const amountOwedToYou = lifetimeIncome.reduce((sum, e) => {
-    if (e.paymentStatus === "paid") return sum;
     const paid = e.amountPaid ?? 0;
     return sum + Math.max(e.amount - paid, 0);
   }, 0);
@@ -114,7 +104,6 @@ export function ReportView({
       {/* Header & Controls Bar */}
       {/* <Card className="rounded-3xl border border-slate-200/80 bg-white p-6 shadow-xs"></Card> */}
 
-      {/* Lifetime Overview Cards */}
       {/* Lifetime Overview Cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         <StatCard
